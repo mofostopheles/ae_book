@@ -4,7 +4,7 @@
  * A script for rendering out separately tagged layers in one/more selected comps.
  * Just add "#somevalue" to any layer you want rendered.
  * Renders will be appended with that tag name.
- * e.g. all layers within a comp tagged "#audio" will be rendered together into [comp name][tag name].[file extension]
+ * e.g. all layers tagged "#audio" will be rendered together into [comp name][tag name].[file extension]
  * 
  */
 
@@ -88,7 +88,7 @@ var renderLayerPasses = function() {
 
                     // Clean up the name because After Effects automatically adds numbers
                     // at the end of names when duping comps.
-                    // This will probably break if the comp has a version number at the end.
+                    // This will probably break you if the comp has a version number higher than 2.
                     if (tmpSelectedComp.name.indexOf("_2") > -1) {
                         tmpSelectedComp.name = tmpSelectedComp.name.replace("_2", "");
 
@@ -162,14 +162,6 @@ function aalert(pArg) {
 // *************************************************************************
 
 var verbose = true; // Set to false to silence alerts.
-
-var vars = {
-    searchAndReplaceBundle: [ // each nested pair = [searchString, replaceString]
-        ["1", "_intro"],
-        ["2", "_outro"],
-        ["", ""], //etc
-    ],
-};
 
 // *************************************************************************
 // **************************** FUNCTION CALL ******************************
