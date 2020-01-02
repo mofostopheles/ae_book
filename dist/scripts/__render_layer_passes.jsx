@@ -1,11 +1,7 @@
 ﻿/**
- * @fileoverview __render_layer_passes.jsx 
- * 
- * A script for rendering out separately tagged layers in one/more selected comps.
- * Just add "#somevalue" to any layer you want rendered.
- * Renders will be appended with that tag name.
+ * An After Effects script for rendering out separately tagged layers in one/more selected comps.
+ * Just add "#somevalue" to any layer you want rendered. Renders will be appended with that tag name.
  * e.g. all layers tagged "#audio" will be rendered together into [comp name][tag name].[file extension]
- * 
  */
 
 // Copyright © 2020, Arlo Emerson
@@ -26,6 +22,10 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+/**
+ * Function with inner main function. Invoked at bottom of this file.
+ * Loops selected comps and creates render queue items based on tagged layers.
+ */
 var renderLayerPasses = function() {
     app.beginUndoGroup("work_undo");
 
@@ -136,6 +136,9 @@ var renderLayerPasses = function() {
 // **************************** HELPER METHODS *****************************
 // *************************************************************************
 
+/**
+ * Returns an array of selected comps.
+ */
 var getSelectedComps = function() {
     var arrSelectedComps = new Array();
     for (var i = app.project.items.length; i >= 1; i--) {
@@ -151,6 +154,9 @@ var getSelectedComps = function() {
     return arrSelectedComps;
 };
 
+/**
+ * Wraps an alert with verbose flag.
+ */
 function aalert(pArg) {
     if (verbose) {
         alert(pArg);
