@@ -25,7 +25,7 @@
  * Function with inner main function. Invoked at bottom of this file.
  * Removes unwanted comps from project pane.
  */
- var cleanupLayerPasses = function() {
+var cleanupLayerPasses = function() {
     app.beginUndoGroup("work_undo");
 
     return {

@@ -1,7 +1,9 @@
-﻿// __update_props_from_animation_master.jsx 
-// v.2
+﻿/**
+ * An After Effects script for updating a set of layers with properties from a master layer.
+ * v2
+ */
 
-// Copyright © 2019, Arlo Emerson
+// Copyright © 2020, Arlo Emerson
 // arloemerson@gmail.com
 
 /*
@@ -108,6 +110,10 @@ var updatePropsFromAnimationMaster = function() {
 // *************************************************************************
 // **************************** HELPER METHODS *****************************
 // *************************************************************************
+
+/**
+ * Returns an array of selected comps.
+ */
 var getSelectedComps = function() {
     var arrSelectedComps = new Array();
     for (var i = app.project.items.length; i >= 1; i--) {
@@ -159,6 +165,9 @@ function applyKeyframesToProperty(pLayer, pProperty, pKeysArray) {
     }
 }
 
+/**
+ * Wraps an alert with verbose flag.
+ */
 function aalert(pArg) {
     if (verbose) {
         alert(pArg);
@@ -168,7 +177,9 @@ function aalert(pArg) {
 // *************************************************************************
 // ************************* USER DEFINED VARIABLES ************************
 // *************************************************************************
+
 var verbose = true; // Set to false to silence alerts.
+
 var vars = {
     layerNameToFind: "animation_target", // The name of the layer/s to find.
     layerRenameTo: "", // Optional. Set this to rename target layers.
@@ -177,4 +188,5 @@ var vars = {
 // *************************************************************************
 // **************************** FUNCTION CALL ******************************
 // *************************************************************************
+
 updatePropsFromAnimationMaster().main(vars.layerNameToFind, vars.layerRenameTo);

@@ -18,14 +18,18 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-// Run this script from the command line with:
-// AfterFX -r X:\path_to_book\__append_comp_names_with_string.jsx
-// Note: You first might need to add AfterFX to your computer's path variable.
+/**
+ * Function with inner main function. Invoked at bottom of this file.
+ * Append comp names with main's params.
+ */
 var appendCompNamesWithString = function() {
     app.beginUndoGroup("work_undo");
 
     return {
         arrSelectedComps: getSelectedComps(),
+        /**
+         * pStringToAppend The string to append to the selected comps names.
+         */
         main: function(pStringToAppend) {
 
             var compsChangedCounter = 0;
@@ -46,6 +50,9 @@ var appendCompNamesWithString = function() {
 // **************************** HELPER METHODS *****************************
 // *************************************************************************
 
+/**
+ * Returns an array of selected comps.
+ */
 var getSelectedComps = function() {
     var arrSelectedComps = new Array();
     for (var i = app.project.items.length; i >= 1; i--) {
@@ -61,6 +68,9 @@ var getSelectedComps = function() {
     return arrSelectedComps;
 }
 
+/**
+ * Wraps an alert with verbose flag.
+ */
 function aalert(pArg) {
     if (verbose) {
         alert(pArg);
@@ -70,6 +80,7 @@ function aalert(pArg) {
 // *************************************************************************
 // ************************* USER DEFINED VARIABLES ************************
 // *************************************************************************
+
 var verbose = true; // Set to false to silence alerts.
 
 var vars = {
@@ -79,4 +90,5 @@ var vars = {
 // *************************************************************************
 // **************************** FUNCTION CALL ******************************
 // *************************************************************************
+
 appendCompNamesWithString().main(vars.stringToAppend);

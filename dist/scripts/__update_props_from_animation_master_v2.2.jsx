@@ -1,7 +1,9 @@
-﻿// __update_props_from_animation_master_v2.2.jsx 
-// v.2.2
+﻿/**
+ * An After Effects script for updating a set of layers with properties from a master layer.
+ * v2.2
+ */
 
-// Copyright © 2019, Arlo Emerson
+// Copyright © 2020, Arlo Emerson
 // arloemerson@gmail.com
 
 /*
@@ -19,9 +21,10 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-// Run this script from the command line with:
-// AfterFX -r X:\path_to_book\__update_props_from_animation_master_v2.2.jsx
-// Note: You first might need to add AfterFX to your computer's path variable.
+/**
+ * Function with inner main function. Invoked at bottom of this file.
+ * Updates a layer based on a master layer's properties.
+ */
 var updatePropsFromAnimationMaster = function() {
     app.beginUndoGroup("work_undo");
 
@@ -121,6 +124,9 @@ var updatePropsFromAnimationMaster = function() {
 // **************************** HELPER METHODS *****************************
 // *************************************************************************
 
+/**
+ * Returns an array of selected comps.
+ */
 var getSelectedComps = function() {
     var arrSelectedComps = new Array();
     for (var i = app.project.items.length; i >= 1; i--) {
@@ -172,6 +178,9 @@ function applyKeyframesToProperty(pLayer, pProperty, pKeysArray) {
     }
 }
 
+/**
+ * Wraps an alert with verbose flag.
+ */
 function aalert(pArg) {
     if (verbose) {
         alert(pArg);
@@ -181,6 +190,7 @@ function aalert(pArg) {
 // *************************************************************************
 // ************************* USER DEFINED VARIABLES ************************
 // *************************************************************************
+
 var verbose = true; // Set to false to silence alerts.
 
 var vars = {
@@ -191,4 +201,5 @@ var vars = {
 // *************************************************************************
 // **************************** FUNCTION CALL ******************************
 // *************************************************************************
+
 updatePropsFromAnimationMaster().main(vars.layerNameToFind, vars.layerRenameTo);

@@ -1,6 +1,10 @@
-﻿// __insert_and_position_comp_within_comps_v2.jsx
+﻿/**
+ * An After Effects script for inserting and positioning comps.
+ * Consumes the auto-generated JavaScript from __generate_javascript_from_captured_properties.jsx.
+ * v2
+ */
 
-// Copyright © 2019, Arlo Emerson
+// Copyright © 2020, Arlo Emerson
 // arloemerson@gmail.com
 
 /*
@@ -18,14 +22,18 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-// Run this script from the command line with:
-// AfterFX -r X:\path_to_book\__insert_and_position_comp_within_comps_v2.jsx
-// Note: You first might need to add AfterFX to your computer's path variable.
+/**
+ * Function with inner main function. Invoked at bottom of this file.
+ * Places pCompToPlace and positions it per auto-generated JavaScript.
+ */
 var insertAndPositionCompWithinComps = function() {
     app.beginUndoGroup("work_undo");
 
     return {
         arrSelectedComps: getSelectedComps(),
+        /**
+         * pCompToPlace The comp to place.
+         */
         main: function(pCompToPlace) {
             if (pCompToPlace == "") {
                 aalert("Need a comp name for this to work.")
@@ -107,6 +115,9 @@ var insertAndPositionCompWithinComps = function() {
 // **************************** HELPER METHODS *****************************
 // *************************************************************************
 
+/**
+ * Returns an array of selected comps.
+ */
 var getSelectedComps = function() {
     var arrSelectedComps = new Array();
     for (var i = app.project.items.length; i >= 1; i--) {
@@ -131,6 +142,9 @@ var getComp = function(pCompName) {
     return null;
 }
 
+/**
+ * Wraps an alert with verbose flag.
+ */
 function aalert(pArg) {
     if (verbose) {
         alert(pArg);
@@ -140,7 +154,9 @@ function aalert(pArg) {
 // *************************************************************************
 // ************************* USER DEFINED VARIABLES ************************
 // *************************************************************************
+
 var verbose = true; // Set to false to silence alerts.
+
 var vars = {
     compToPlace: "gradient_overlay", // Comp name to insert in selected comps.
 }
@@ -148,4 +164,5 @@ var vars = {
 // *************************************************************************
 // **************************** FUNCTION CALL ******************************
 // *************************************************************************
+
 insertAndPositionCompWithinComps().main(vars.compToPlace);

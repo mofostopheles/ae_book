@@ -1,6 +1,8 @@
-﻿// __search_and_replace_comp_names.jsx
+﻿/**
+ * An After Effects script for replacing comp names. 
+ */
 
-// Copyright © 2019, Arlo Emerson
+// Copyright © 2020, Arlo Emerson
 // arloemerson@gmail.com
 
 /*
@@ -18,16 +20,19 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-// Run this script from the command line with:
-// AfterFX -r X:\path_to_book\__search_and_replace_comp_names.jsx
-// Note: You first might need to add AfterFX to your computer's path variable.
+/**
+ * Function with inner main function. Invoked at bottom of this file.
+ * Loops selected comps and renames them according to main's params.
+ */
 var searchAndReplaceCompNames = function() {
     app.beginUndoGroup("work_undo");
 
     return {
         arrSelectedComps: getSelectedComps(),
+        /**
+         * Takes two params for string match and replace
+         */
         main: function(pStringToFind, pStringReplacement) {
-
             var compsChangedCounter = 0;
             for (var k = 0; k < this.arrSelectedComps.length; k++) {
                 var selectedComp = this.arrSelectedComps[k];
@@ -48,6 +53,9 @@ var searchAndReplaceCompNames = function() {
 // **************************** HELPER METHODS *****************************
 // *************************************************************************
 
+/**
+ * Returns an array of selected comps.
+ */
 var getSelectedComps = function() {
     var arrSelectedComps = new Array();
     for (var i = app.project.items.length; i >= 1; i--) {
@@ -61,8 +69,11 @@ var getSelectedComps = function() {
         aalert("Please select at least one comp.");
     }
     return arrSelectedComps;
-}
+};
 
+/**
+ * Wraps an alert with verbose flag.
+ */
 function aalert(pArg) {
     if (verbose) {
         alert(pArg);
@@ -72,6 +83,7 @@ function aalert(pArg) {
 // *************************************************************************
 // ************************* USER DEFINED VARIABLES ************************
 // *************************************************************************
+
 var verbose = true; // Set to false to silence alerts.
 
 var vars = {
@@ -82,4 +94,5 @@ var vars = {
 // *************************************************************************
 // **************************** FUNCTION CALL ******************************
 // *************************************************************************
+
 searchAndReplaceCompNames().main(vars.stringToFind, vars.stringReplacement);

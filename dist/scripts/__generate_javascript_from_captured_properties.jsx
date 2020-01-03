@@ -1,6 +1,8 @@
-﻿// __generate_javascript_from_captured_properties.jsx
+﻿/**
+ * An After Effects script for generating JavaScript from object properties.
+ */
 
-// Copyright © 2019, Arlo Emerson
+// Copyright © 2020, Arlo Emerson
 // arloemerson@gmail.com
 
 /*
@@ -18,9 +20,10 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-// Run this script from the command line with:
-// AfterFX -r X:\path_to_book\__generate_javascript_from_captured_properties.jsx
-// Note: You first might need to add AfterFX to your computer's path variable.
+/**
+ * Function with inner main function. Invoked at bottom of this file.
+ * Constructs a string of JavaScript based on properties of pLayerToFind.
+ */
 var capturePropertyValuesFromComps = function() {
     app.beginUndoGroup("work_undo");
 
@@ -110,6 +113,9 @@ function getCodeBlock(pLayer) {
 // **************************** HELPER METHODS *****************************
 // *************************************************************************
 
+/**
+ * Returns an array of selected comps.
+ */
 var getSelectedComps = function() {
     var arrSelectedComps = new Array();
     for (var i = app.project.items.length; i >= 1; i--) {
@@ -134,6 +140,9 @@ var getComp = function(pCompName) {
     return null;
 }
 
+/**
+ * Wraps an alert with verbose flag.
+ */
 function aalert(pArg) {
     if (verbose) {
         alert(pArg);
@@ -143,6 +152,7 @@ function aalert(pArg) {
 // *************************************************************************
 // ************************* USER DEFINED VARIABLES ************************
 // *************************************************************************
+
 var newLine = "\n";
 var verbose = true; // Set to false to silence alerts.
 var vars = {
@@ -152,4 +162,5 @@ var vars = {
 // *************************************************************************
 // **************************** FUNCTION CALL ******************************
 // *************************************************************************
+
 capturePropertyValuesFromComps().main(vars.layerNameToFind);
