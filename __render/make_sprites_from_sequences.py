@@ -39,7 +39,7 @@ import lib.png_sprite_maker as _sprite_maker
 import lib.TextColors as _text_colors
 from PIL import Image
 
-class MakeSpritesFromSequences():
+class make_spritesFromSequences():
 
 	def __init__(self):
 		print("Running " + _text_colors.HEADERLEFT2 + _text_colors.INVERTED + self.__class__.__name__ + " " + _text_colors.ENDC)
@@ -155,9 +155,9 @@ class MakeSpritesFromSequences():
 		tmp_image=Image.open( files[0] )
 		
 		if self.vertical:
-			processedSprite = _sprite_maker.makeVerticalSprite(files,numberOfFrames,tmp_image.size[0],tmp_image.size[1])
+			processedSprite = _sprite_maker.make_vertical_sprite(files,numberOfFrames,tmp_image.size[0],tmp_image.size[1])
 		else:
-			processedSprite = _sprite_maker.makeSprite(files,numberOfFrames,tmp_image.size[0],tmp_image.size[1])
+			processedSprite = _sprite_maker.make_sprite(files,numberOfFrames,tmp_image.size[0],tmp_image.size[1])
 
 		strDirectory = str(self.working_dir)
 		strFileName = self.SPRITE_PREFIX + self.working_dir_short_name + ".png"
@@ -282,7 +282,7 @@ class MakeSpritesFromSequences():
 # assumes this script is running at sibling level to these folders
 dirs = next( os.walk('.') )[1]
 
-f = MakeSpritesFromSequences()
+f = make_spritesFromSequences()
 
 for dir_name in dirs:
 	# important and basic check so we don't try to process the "processed" folder

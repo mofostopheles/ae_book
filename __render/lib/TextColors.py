@@ -19,7 +19,7 @@ HEADERLEFT = FAIL + "░" + FAIL + "▒" + FAIL + "▓" + FAIL + "█"
 HEADERLEFT2 = CYAN + "░" + CYAN + "▒" + CYAN + "▓" + CYAN + "█"
 HEADERLEFT3 = WARNING + "░" + WARNING + "▒" + WARNING + "▓" + WARNING + "█"
 
-def printLogo():
+def print_logo():
     print(" ")
     print("         ▓█░▓       ▓██▓   ▒░█░    ▒░█░                      ▒                  ")
     print("       ▒██▓██      ░██░▓  ▒░█░▓   ▓██░█▓  ▒░░▓             ▒░█░       ▒▓░▒      ")
