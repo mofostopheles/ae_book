@@ -1,6 +1,6 @@
 ﻿// __append_comp_names_with_string.jsx
 
-// Copyright © 2019, Arlo Emerson
+// Copyright © 2020, Arlo Emerson
 // arloemerson@gmail.com
 
 /*
@@ -18,9 +18,11 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+#include "./__common.jsx";
+
 /**
  * Function with inner main function. Invoked at bottom of this file.
- * Append comp names with main's params.
+ * Appends comp names with main's params.
  */
 var appendCompNamesWithString = function() {
     app.beginUndoGroup("work_undo");
@@ -28,14 +30,16 @@ var appendCompNamesWithString = function() {
     return {
         arrSelectedComps: getSelectedComps(),
         /**
-         * pStringToAppend The string to append to the selected comps names.
+         * stringToAppend The string to append to the selected comps names.
          */
-        main: function(pStringToAppend) {
+        main: function(stringToAppend) {
 
             var compsChangedCounter = 0;
-            for (var k = 0; k < this.arrSelectedComps.length; k++) {
-                var selectedComp = this.arrSelectedComps[k];
-                selectedComp.name = selectedComp.name + pStringToAppend;
+            var selectedComp;
+            var k;
+            for (k = 0; k < this.arrSelectedComps.length; k++) {
+                selectedComp = this.arrSelectedComps[k];
+                selectedComp.name = selectedComp.name + stringToAppend;
                 compsChangedCounter++;
             }
 
@@ -46,49 +50,15 @@ var appendCompNamesWithString = function() {
     app.endUndoGroup();
 };
 
-// *************************************************************************
-// **************************** HELPER METHODS *****************************
-// *************************************************************************
-
 /**
- * Returns an array of selected comps.
+ * Values passed to the function go here, inside this vars object.
  */
-var getSelectedComps = function() {
-    var arrSelectedComps = new Array();
-    for (var i = app.project.items.length; i >= 1; i--) {
-        item = app.project.items[i];
-        if ((item instanceof CompItem) && item.selected) {
-            arrSelectedComps[arrSelectedComps.length] = item;
-        }
-    }
-
-    if (arrSelectedComps.length < 1) {
-        aalert("Please select at least one comp.");
-    }
-    return arrSelectedComps;
-}
-
-/**
- * Wraps an alert with verbose flag.
- */
-function aalert(pArg) {
-    if (verbose) {
-        alert(pArg);
-    }
-}
-
-// *************************************************************************
-// ************************* USER DEFINED VARIABLES ************************
-// *************************************************************************
-
-var verbose = true; // Set to false to silence alerts.
-
 var vars = {
     stringToAppend: "-lc-CC", // String to append to selected comps.
 }
 
-// *************************************************************************
-// **************************** FUNCTION CALL ******************************
-// *************************************************************************
-
+/**
+ * Run the script.
+ * Calls main and passes args (if any).
+ */
 appendCompNamesWithString().main(vars.stringToAppend);

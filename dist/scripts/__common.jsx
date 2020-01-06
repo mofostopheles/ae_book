@@ -19,9 +19,8 @@
 */
 
 /**
- * indexOf
+ * polyfill for Array.indexOf
  */
-
 if(!Array.prototype.indexOf) 
 {
     Array.prototype.indexOf = function(obj) 
@@ -38,4 +37,35 @@ if(!Array.prototype.indexOf)
 }
 
 
-    
+/**
+ * Returns an array of selected comps.
+ */
+var getSelectedComps = function() {
+    var arrSelectedComps = new Array();
+    var i;
+    var item;
+
+    for (i = app.project.items.length; i >= 1; i--) {
+        item = app.project.items[i];
+        if ((item instanceof CompItem) && item.selected) {
+            arrSelectedComps[arrSelectedComps.length] = item;
+        }
+    }
+
+    if (arrSelectedComps.length < 1) {
+        aalert("Please select at least one comp.");
+    }
+
+    return arrSelectedComps;
+};
+
+var verbose = true; // Set to false to silence alerts.
+
+/**
+ * Wraps an alert with verbose flag.
+ */
+function aalert(pArg) {
+    if (verbose) {
+        alert(pArg);
+    }
+}
