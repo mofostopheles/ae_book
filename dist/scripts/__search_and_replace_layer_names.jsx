@@ -1,5 +1,5 @@
-﻿/**
- * An After Effects script for replacing layer names. 
+/**
+ * An After Effects script for replacing layer names.
  */
 
 // Copyright © 2019, Arlo Emerson
@@ -20,33 +20,39 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+#include './__common.jsx';
+
+app.beginUndoGroup('work_undo');
+
 /**
  * Function with inner main function. Invoked at bottom of this file.
- * Loops selected comps' layers, performs name replacement based on 
+ * Loops selected comps' layers, performs name replacement based on
  * search and replace params passed to main.
  */
 var searchAndReplaceLayerNames = function() {
-    app.beginUndoGroup("work_undo");
 
     return {
         arrSelectedComps: getSelectedComps(),
         /**
-         * pSearchAndReplaceBundle is a two-dimensional array
+         * searchAndReplaceBundle is a two-dimensional array
          * where each item contains search/replace pairs.
          */
-        main: function(pSearchAndReplaceBundle) {
+        main: function(searchAndReplaceBundle) {
             var compsChangedCounter = 0;
+            var layer;
+            var changeMade;
+            var selectedComp;
             for (var k = 0; k < this.arrSelectedComps.length; k++) {
-                var selectedComp = this.arrSelectedComps[k];
+                selectedComp = this.arrSelectedComps[k];
                 for (var j = 1; j <= selectedComp.layers.length; j++) {
-                    var layer = selectedComp.layers[j];
-                    var changeMade = false;
-                    for (var ii = 0; ii < pSearchAndReplaceBundle.length; ii++) {
-                        if (layer.name.indexOf(pSearchAndReplaceBundle[ii][0]) > -1) {
+                    layer = selectedComp.layers[j];
+                    changeMade = false;
+                    for (var ii = 0; ii < searchAndReplaceBundle.length; ii++) {
+                        if (layer.name.indexOf(searchAndReplaceBundle[ii][0]) > -1) {
                             checkLock(layer);
                             layer.name = layer.name.replace(
-                                pSearchAndReplaceBundle[ii][0],
-                                pSearchAndReplaceBundle[ii][1]
+                                searchAndReplaceBundle[ii][0],
+                                searchAndReplaceBundle[ii][1]
                             );
                             changeMade = true;
                             checkLock(layer);
@@ -57,17 +63,16 @@ var searchAndReplaceLayerNames = function() {
                     compsChangedCounter++;
                 }
             }
-            aalert(compsChangedCounter + " comp/s total touched.");
-        },
-    }
-    app.endUndoGroup();
+            aalert(compsChangedCounter + ' comp/s total touched.');
+        }
+    };
 };
 
 /**
- * pFunction is a function containing the layer object.
+ * functionObject is a function containing the layer object.
  * Stores the state of the layer's lock state.
  */
-function runCheckLock(pFunction) {
+function runCheckLock(functionObject) {
     var layerWasLocked = {
         state: false
     };
@@ -83,62 +88,29 @@ function runCheckLock(pFunction) {
             layer.locked = true;
             layerWasLocked.state = false;
         }
-    }
+    };
 }
 
 /**
- * Convenience function for calling runCheckLock. 
- * pLayer is the current layer in the callee's loop.
+ * Convenience function for calling runCheckLock.
+ * layer is the current layer in the callee's loop.
  */
-var checkLock = runCheckLock(function(pLayer) {});
-
-// *************************************************************************
-// **************************** HELPER METHODS *****************************
-// *************************************************************************
+var checkLock = runCheckLock(function(layer) {});
 
 /**
- * Returns an array of selected comps.
+ * Anything to be passed to the script's main method is set here.
  */
-var getSelectedComps = function() {
-    var arrSelectedComps = new Array();
-    for (var i = app.project.items.length; i >= 1; i--) {
-        item = app.project.items[i];
-        if ((item instanceof CompItem) && item.selected) {
-            arrSelectedComps[arrSelectedComps.length] = item;
-        }
-    }
-
-    if (arrSelectedComps.length < 1) {
-        aalert("Please select at least one comp.");
-    }
-    return arrSelectedComps;
-};
-
-/**
- * Wraps an alert with verbose flag.
- */
-function aalert(pArg) {
-    if (verbose) {
-        alert(pArg);
-    }
-}
-
-// *************************************************************************
-// ************************* USER DEFINED VARIABLES ************************
-// *************************************************************************
-
-var verbose = true; // Set to false to silence alerts.
-
 var vars = {
     searchAndReplaceBundle: [ // each nested pair = [searchString, replaceString]
-        ["1", "_intro"],
-        ["2", "_outro"],
-        ["", ""], //etc
-    ],
+        ['1', '_intro'],
+        ['2', '_outro'],
+        ['', ''] // etc
+    ]
 };
 
-// *************************************************************************
-// **************************** FUNCTION CALL ******************************
-// *************************************************************************
-
+/**
+ * Runs the script.
+ * Calls main and passes args (if any).
+ */
 searchAndReplaceLayerNames().main(vars.searchAndReplaceBundle);
+app.endUndoGroup();

@@ -1,4 +1,4 @@
-﻿/**
+/**
  * An After Effects script for updating a set of layers with properties from a master layer.
  * v2
  */
@@ -21,172 +21,111 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-// Run this script from the command line with:
-// AfterFX -r X:\path_to_book\__update_props_from_animation_master.jsx
-// Note: You first might need to add AfterFX to your computer's path variable.
+#include './__common.jsx'; // includes polyfills and common functions
+
+app.beginUndoGroup('work_undo');
+
+/**
+ * Function with inner main function. Invoked at bottom of this file.
+ * Updates a layer based on a master layer's properties.
+ */
 var updatePropsFromAnimationMaster = function() {
-    app.beginUndoGroup("work_undo");
-
     return {
-        arrSelectedComps: getSelectedComps(),
-        main: function(pLayerNameToFind, pLayerRename) {
 
-            if (arguments[1] == "") {
-                pLayerRename = pLayerNameToFind; // user did not set it
+        arrSelectedComps: getSelectedComps(),
+        main: function(layerNameToFind, renameTo) {
+            if (arguments[1] === '') {
+                renameTo = layerNameToFind; // user did not set it
             }
 
             var compsChangedCounter = 0;
+            var targetComp;
+            var masterLayer;
+            var layersChangedCounter = 0;
+            var arrayOfItems;
+            var targetFound;
+
             for (var k = 0; k < this.arrSelectedComps.length; k++) {
-                var targetComp = this.arrSelectedComps[k];
-                var ableToUpdate = false;
-                var masterLayer = targetComp.selectedLayers[0]; // we only use first one 
+                targetComp = this.arrSelectedComps[k];
+                masterLayer = targetComp.selectedLayers[0]; // we only use first one
 
                 if (masterLayer == null) {
-                    aalert("Please select a master layer in '" + targetComp.name + "'.");
+                    aalert('Please select a master layer in "' + targetComp.name + '".');
                 } else {
+                    layersChangedCounter = 0; // track how many layers get changed
+                    arrayOfItems = []; // build an array of target layers
+                    targetFound = false;
 
-                    // track how many layers get changed
-                    var layersChangedCounter = 0;
-
-                    // build an array of target layers
-                    var arrayOfItems = [];
-                    var targetFound = false;
                     for (var j = 1; j <= targetComp.layers.length; j++) {
-                        if (targetComp.layers[j].name.indexOf(pLayerNameToFind) != -1) {
+                        if (targetComp.layers[j].name.indexOf(layerNameToFind) !== -1) {
                             arrayOfItems.push(targetComp.layers[j]);
                             targetFound = true;
                         }
                     }
 
-                    if (masterLayer.name == pLayerNameToFind) {
+                    if (masterLayer.name === layerNameToFind) {
                         aalert('Master layer has the same name as target layers. Make master layer name unique.');
                         return;
                     }
 
-                    // iterate over the target layers
-                    for (var j = 0; j <= arrayOfItems.length - 1; j++) {
+                    var dupeLayer;
+                    var targetLayerScale;
+                    var targetLayerPosition;
+                    var targetStartTime;
+                    var targetLayerLabel;
+                    var alertMessage;
 
+                    // iterate over the target layers
+                    for (var jj = 0; jj <= arrayOfItems.length - 1; jj++) {
                         // clone the master and move it next to the target
-                        var dupeLayer = masterLayer.duplicate();
-                        dupeLayer.moveAfter(arrayOfItems[j]);
+                        dupeLayer = masterLayer.duplicate();
+                        dupeLayer.moveAfter(arrayOfItems[jj]);
 
                         // collect properties that we want to persist
-                        var targetLayerScale = arrayOfItems[j].scale.value;
-                        var targetLayerPosition = arrayOfItems[j].position.value;
-                        var targetStartTime = arrayOfItems[j].startTime;
-                        var targetLayerLabel = arrayOfItems[j].label;
+                        targetLayerScale = arrayOfItems[jj].scale.value;
+                        targetLayerPosition = arrayOfItems[jj].position.value;
+                        targetStartTime = arrayOfItems[jj].startTime;
+                        targetLayerLabel = arrayOfItems[jj].label;
 
                         // transfer properties to the cloned layer
                         dupeLayer.startTime = targetStartTime;
                         dupeLayer.scale.setValue(targetLayerScale);
                         dupeLayer.position.setValue(targetLayerPosition);
                         dupeLayer.label = targetLayerLabel;
-                        dupeLayer.name = pLayerRename;
+                        dupeLayer.name = renameTo;
                         dupeLayer.enabled = true;
                         dupeLayer.guideLayer = false;
 
                         // truncate the array
-                        arrayOfItems[j].remove();
-
+                        arrayOfItems[jj].remove();
                         layersChangedCounter++;
                     }
 
-                    var alertMessage = layersChangedCounter.toString() + " layer/s touched in '" + targetComp.name + "'.";
+                    alertMessage = layersChangedCounter.toString() + ' layer/s touched in "' + targetComp.name + '".';
                     if (!targetFound) {
-                        alertMessage += "\n" + "Could not find a layer with name '" + pLayerNameToFind + "'.";
+                        alertMessage += '\n' + 'Could not find a layer with name "' + layerNameToFind + '".';
                     }
                     aalert(alertMessage);
                 }
-
                 compsChangedCounter++;
             }
-            aalert(compsChangedCounter + " comp/s total touched.");
-        },
-    }
-
-    app.endUndoGroup();
+            aalert(compsChangedCounter + ' comp/s total touched.');
+        }
+    };
 };
 
-// *************************************************************************
-// **************************** HELPER METHODS *****************************
-// *************************************************************************
-
 /**
- * Returns an array of selected comps.
+ * Anything to be passed to the script's main method is set here.
  */
-var getSelectedComps = function() {
-    var arrSelectedComps = new Array();
-    for (var i = app.project.items.length; i >= 1; i--) {
-        item = app.project.items[i];
-        if ((item instanceof CompItem) && item.selected) {
-            arrSelectedComps[arrSelectedComps.length] = item;
-        }
-    }
-
-    if (arrSelectedComps.length < 1) {
-        aalert("Please select at least one comp.");
-    }
-    return arrSelectedComps;
-}
-
-function getKeyframesFromProperty(pLayer, pProperty, pNumKeys) {
-    var targetKeyArray = new Array();
-    for (var ki = 1; ki <= pNumKeys; ki++) {
-        targetKeyArray[ki] = {
-            keyValue: pLayer.property(pProperty).keyValue(ki),
-            keyTime: pLayer.property(pProperty).keyTime(ki),
-            keyInInterpolationType: pLayer.property(pProperty).keyInInterpolationType(ki),
-            keyOutInterpolationType: pLayer.property(pProperty).keyOutInterpolationType(ki),
-            keyInSpatialTangent: pLayer.property(pProperty).keyInSpatialTangent(ki),
-            keyOutSpatialTangent: pLayer.property(pProperty).keyOutSpatialTangent(ki),
-            keyInTemporalEase: pLayer.property(pProperty).keyInTemporalEase(ki),
-            keyOutTemporalEase: pLayer.property(pProperty).keyOutTemporalEase(ki),
-            keySpatialAutoBezier: pLayer.property(pProperty).keySpatialAutoBezier(ki),
-            keySpatialContinuous: pLayer.property(pProperty).keySpatialContinuous(ki),
-            keyTemporalAutoBezier: pLayer.property(pProperty).keyTemporalAutoBezier(ki),
-            keyTemporalContinuous: pLayer.property(pProperty).keyTemporalContinuous(ki),
-            keyRoving: pLayer.property(pProperty).keyRoving(ki),
-        }
-    }
-    return targetKeyArray;
-}
-
-function applyKeyframesToProperty(pLayer, pProperty, pKeysArray) {
-    for (var ki = 1; ki < pKeysArray.length; ki++) {
-        pLayer.property(pProperty).setValueAtTime(pKeysArray[ki].keyTime, pKeysArray[ki].keyValue);
-    }
-    for (var ki = 1; ki < pKeysArray.length; ki++) {
-        pKeysArray[ki].keyTemporalAutoBezier ? pLayer.property(pProperty).setTemporalAutoBezierAtKey(ki, pKeysArray[ki].keySpatialAutoBezier) : false;
-        pKeysArray[ki].keyInSpatialTangent ? pLayer.property(pProperty).setSpatialTangentsAtKey(ki, pKeysArray[ki].keyInSpatialTangent, pKeysArray[ki].keyOutSpatialTangent) : false;
-        pKeysArray[ki].keyInTemporalEase ? pLayer.property(pProperty).setTemporalEaseAtKey(ki, pKeysArray[ki].keyInTemporalEase, pKeysArray[ki].keyOutTemporalEase) : false;
-        pKeysArray[ki].keySpatialContinuous ? pLayer.property(pProperty).setSpatialContinuousAtKey(ki, pKeysArray[ki].keySpatialContinuous) : false;
-        pKeysArray[ki].keyRoving ? pLayer.property(pProperty).setRovingAtKey(ki, pKeysArray[ki].keyRoving) : false;
-        pLayer.property(pProperty).setInterpolationTypeAtKey(ki, pKeysArray[ki].keyInInterpolationType, pKeysArray[ki].keyOutInterpolationType);
-    }
-}
-
-/**
- * Wraps an alert with verbose flag.
- */
-function aalert(pArg) {
-    if (verbose) {
-        alert(pArg);
-    }
-}
-
-// *************************************************************************
-// ************************* USER DEFINED VARIABLES ************************
-// *************************************************************************
-
-var verbose = true; // Set to false to silence alerts.
-
 var vars = {
-    layerNameToFind: "animation_target", // The name of the layer/s to find.
-    layerRenameTo: "", // Optional. Set this to rename target layers.
-}
+    layerNameToFind: 'animation_target', // The name of the layer/s to find.
+    layerRenameTo: '' // Optional. Set this to rename target layers.
+};
 
-// *************************************************************************
-// **************************** FUNCTION CALL ******************************
-// *************************************************************************
-
+/**
+ * Runs the script.
+ * Calls main and passes args (if any).
+ */
 updatePropsFromAnimationMaster().main(vars.layerNameToFind, vars.layerRenameTo);
+
+app.endUndoGroup();

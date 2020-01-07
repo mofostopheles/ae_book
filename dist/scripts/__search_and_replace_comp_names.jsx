@@ -1,5 +1,5 @@
-﻿/**
- * An After Effects script for replacing comp names. 
+/**
+ * An After Effects script for replacing comp names.
  */
 
 // Copyright © 2020, Arlo Emerson
@@ -20,79 +20,47 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+#include './__common.jsx';
+
+app.beginUndoGroup('work_undo');
+
 /**
  * Function with inner main function. Invoked at bottom of this file.
  * Loops selected comps and renames them according to main's params.
  */
 var searchAndReplaceCompNames = function() {
-    app.beginUndoGroup("work_undo");
-
     return {
         arrSelectedComps: getSelectedComps(),
         /**
          * Takes two params for string match and replace
          */
-        main: function(pStringToFind, pStringReplacement) {
+        main: function(stringToFind, stringReplacement) {
             var compsChangedCounter = 0;
+            var selectedComp;
             for (var k = 0; k < this.arrSelectedComps.length; k++) {
-                var selectedComp = this.arrSelectedComps[k];
-                if (selectedComp.name.indexOf(pStringToFind) > -1) {
-                    selectedComp.name = selectedComp.name.replace(pStringToFind, pStringReplacement);
+                selectedComp = this.arrSelectedComps[k];
+                if (selectedComp.name.indexOf(stringToFind) > -1) {
+                    selectedComp.name = selectedComp.name.replace(stringToFind, stringReplacement);
                     compsChangedCounter++;
                 }
             }
-
-            aalert(compsChangedCounter + " comp/s total touched.");
-        },
-    }
-
-    app.endUndoGroup();
-};
-
-// *************************************************************************
-// **************************** HELPER METHODS *****************************
-// *************************************************************************
-
-/**
- * Returns an array of selected comps.
- */
-var getSelectedComps = function() {
-    var arrSelectedComps = new Array();
-    for (var i = app.project.items.length; i >= 1; i--) {
-        item = app.project.items[i];
-        if ((item instanceof CompItem) && item.selected) {
-            arrSelectedComps[arrSelectedComps.length] = item;
+            aalert(compsChangedCounter + ' comp/s total touched.');
         }
-    }
-
-    if (arrSelectedComps.length < 1) {
-        aalert("Please select at least one comp.");
-    }
-    return arrSelectedComps;
+    };
 };
 
 /**
- * Wraps an alert with verbose flag.
+ * Anything to be passed to the script's main method is set here.
  */
-function aalert(pArg) {
-    if (verbose) {
-        alert(pArg);
-    }
-}
-
-// *************************************************************************
-// ************************* USER DEFINED VARIABLES ************************
-// *************************************************************************
-
-var verbose = true; // Set to false to silence alerts.
-
 var vars = {
-    stringToFind: "-lc-CC", // String to find in selected comps.
-    stringReplacement: "-fr-CA", // String to replace found result.
-}
+    stringToFind: '-lc-CC', // String to find in selected comps.
+    stringReplacement: '-fr-CA' // String to replace found result.
+};
 
-// *************************************************************************
-// **************************** FUNCTION CALL ******************************
-// *************************************************************************
-
+/**
+ * Runs the script.
+ * Calls main and passes args (if any).
+ */
 searchAndReplaceCompNames().main(vars.stringToFind, vars.stringReplacement);
+
+app.endUndoGroup();

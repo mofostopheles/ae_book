@@ -1,4 +1,6 @@
-﻿// __append_comp_names_with_string.jsx
+/**
+ * An After Effects script for appending strings to the end of comp names.
+ */
 
 // Copyright © 2020, Arlo Emerson
 // arloemerson@gmail.com
@@ -18,47 +20,44 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#include "./__common.jsx";
+#include './__common.jsx'; // includes polyfills and common functions
+
+app.beginUndoGroup('work_undo');
 
 /**
  * Function with inner main function. Invoked at bottom of this file.
  * Appends comp names with main's params.
  */
 var appendCompNamesWithString = function() {
-    app.beginUndoGroup("work_undo");
-
     return {
         arrSelectedComps: getSelectedComps(),
         /**
          * stringToAppend The string to append to the selected comps names.
          */
         main: function(stringToAppend) {
-
             var compsChangedCounter = 0;
             var selectedComp;
-            var k;
-            for (k = 0; k < this.arrSelectedComps.length; k++) {
+            for (var k = 0; k < this.arrSelectedComps.length; k++) {
                 selectedComp = this.arrSelectedComps[k];
                 selectedComp.name = selectedComp.name + stringToAppend;
                 compsChangedCounter++;
             }
-
-            aalert(compsChangedCounter + " comp/s total touched.");
-        },
-    }
-
-    app.endUndoGroup();
+            aalert(compsChangedCounter + ' comp/s total touched.');
+        }
+    };
 };
 
 /**
- * Values passed to the function go here, inside this vars object.
+ * Anything to be passed to the script's main method is set here.
  */
 var vars = {
-    stringToAppend: "-lc-CC", // String to append to selected comps.
-}
+    stringToAppend: '-lc-CC' // String to append to selected comps.
+};
 
 /**
- * Run the script.
+ * Runs the script.
  * Calls main and passes args (if any).
  */
 appendCompNamesWithString().main(vars.stringToAppend);
+
+app.endUndoGroup();

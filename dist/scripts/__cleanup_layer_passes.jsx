@@ -1,5 +1,5 @@
-﻿/**
- * An After Effects script for removing unwanted comps from the project pane. 
+/**
+ * An After Effects script for removing unwanted comps from the project pane.
  * Run this after using __render_layer_passes.jsx.
  */
 
@@ -21,53 +21,37 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+#include './__common.jsx'; // includes polyfills and common functions
+
+app.beginUndoGroup('work_undo');
+
 /**
  * Function with inner main function. Invoked at bottom of this file.
  * Removes unwanted comps from project pane.
  */
 var cleanupLayerPasses = function() {
-    app.beginUndoGroup("work_undo");
-
     return {
         arrSelectedComps: getSelectedComps(),
         main: function() {
             var allComps = app.project.items;
             var removedCount = 0;
-
+            var item;
             for (var i = allComps.length; i >= 1; i--) {
                 item = allComps[i];
-                if (item.name.indexOf("remove after render") > -1) {
+                if (item.name.indexOf('remove after render') > -1) {
                     item.remove();
                     removedCount++;
                 }
             }
-            aalert(removedCount + " items were removed.");
-        },
-    }
-    app.endUndoGroup();
+            aalert(removedCount + ' items were removed.');
+        }
+    };
 };
 
-// *************************************************************************
-// **************************** HELPER METHODS *****************************
-// *************************************************************************
-
 /**
- * Wraps an alert with verbose flag.
+ * Runs the script.
+ * Calls main and passes args (if any).
  */
-function aalert(pArg) {
-    if (verbose) {
-        alert(pArg);
-    }
-}
-
-// *************************************************************************
-// ************************* USER DEFINED VARIABLES ************************
-// *************************************************************************
-
-var verbose = true; // Set to false to silence alerts.
-
-// *************************************************************************
-// **************************** FUNCTION CALL ******************************
-// *************************************************************************
-
 cleanupLayerPasses().main();
+
+app.endUndoGroup();
