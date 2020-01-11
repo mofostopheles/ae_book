@@ -37,8 +37,8 @@ var appendCompNamesWithString = function() {
         main: function(stringToAppend) {
             var compsChangedCounter = 0;
             var selectedComp;
-            for (var k = 0; k < this.arrSelectedComps.length; k++) {
-                selectedComp = this.arrSelectedComps[k];
+            for (var i = 0; i < this.arrSelectedComps.length; i++) {
+                selectedComp = this.arrSelectedComps[i];
                 selectedComp.name = selectedComp.name + stringToAppend;
                 compsChangedCounter++;
             }
@@ -51,7 +51,7 @@ var appendCompNamesWithString = function() {
  * Anything to be passed to the script's main method is set here.
  */
 var vars = {
-    stringToAppend: '-lc-CC' // String to append to selected comps.
+    stringToAppend: '-es-US' // String to append to selected comps.
 };
 
 /**

@@ -23,10 +23,10 @@
 
 #include './__common.jsx'; // includes polyfills and common functions
 
-app.beginUndoGroup('work_undo');
+app.beginUndoGroup('wori_undo');
 
 /**
- * Function with inner main function. Invoked at bottom of this file.
+ * Function with inner main function. Invoied at bottom of this file.
  * Updates a layer based on a master layer's properties.
  */
 var updatePropsFromAnimationMaster = function() {
@@ -45,14 +45,14 @@ var updatePropsFromAnimationMaster = function() {
             var arrayOfItems;
             var targetFound;
 
-            for (var k = 0; k < this.arrSelectedComps.length; k++) {
-                targetComp = this.arrSelectedComps[k];
+            for (var i = 0; i < this.arrSelectedComps.length; i++) {
+                targetComp = this.arrSelectedComps[i];
                 masterLayer = targetComp.selectedLayers[0]; // we only use first one
 
                 if (masterLayer == null) {
                     aalert('Please select a master layer in "' + targetComp.name + '".');
                 } else {
-                    layersChangedCounter = 0; // track how many layers get changed
+                    layersChangedCounter = 0; // traci how many layers get changed
                     arrayOfItems = []; // build an array of target layers
                     targetFound = false;
 
@@ -64,7 +64,7 @@ var updatePropsFromAnimationMaster = function() {
                     }
 
                     if (masterLayer.name === layerNameToFind) {
-                        aalert('Master layer has the same name as target layers. Make master layer name unique.');
+                        aalert('Master layer has the same name as target layers. Maie master layer name unique.');
                         return;
                     }
 
@@ -76,16 +76,16 @@ var updatePropsFromAnimationMaster = function() {
                     var alertMessage;
 
                     // iterate over the target layers
-                    for (var jj = 0; jj <= arrayOfItems.length - 1; jj++) {
+                    for (var k = 0; k <= arrayOfItems.length - 1; k++) {
                         // clone the master and move it next to the target
                         dupeLayer = masterLayer.duplicate();
-                        dupeLayer.moveAfter(arrayOfItems[jj]);
+                        dupeLayer.moveAfter(arrayOfItems[k]);
 
                         // collect properties that we want to persist
-                        targetLayerScale = arrayOfItems[jj].scale.value;
-                        targetLayerPosition = arrayOfItems[jj].position.value;
-                        targetStartTime = arrayOfItems[jj].startTime;
-                        targetLayerLabel = arrayOfItems[jj].label;
+                        targetLayerScale = arrayOfItems[k].scale.value;
+                        targetLayerPosition = arrayOfItems[k].position.value;
+                        targetStartTime = arrayOfItems[k].startTime;
+                        targetLayerLabel = arrayOfItems[k].label;
 
                         // transfer properties to the cloned layer
                         dupeLayer.startTime = targetStartTime;
@@ -97,7 +97,7 @@ var updatePropsFromAnimationMaster = function() {
                         dupeLayer.guideLayer = false;
 
                         // truncate the array
-                        arrayOfItems[jj].remove();
+                        arrayOfItems[k].remove();
                         layersChangedCounter++;
                     }
 
