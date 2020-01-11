@@ -67,6 +67,9 @@ var getSelectedComps = function() {
     return arrSelectedComps;
 };
 
+/**
+ * Returns an array of objects, one for each keyframe.
+ */
 function getKeyframesFromProperty(layer, layerProp, keysLength) {
     var targetKeyArray = [];
     for (var ki = 1; ki <= keysLength; ki++) {
@@ -89,6 +92,9 @@ function getKeyframesFromProperty(layer, layerProp, keysLength) {
     return targetKeyArray;
 }
 
+/**
+ * Sets keyframe values to a specific property.
+ */
 function applyKeyframesToProperty(layer, layerProp, keysArray) {
     for (var ki = 1; ki < keysArray.length; ki++) {
         layer.property(layerProp).setValueAtTime(keysArray[ki].keyTime, keysArray[ki].keyValue);
