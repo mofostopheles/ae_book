@@ -47,8 +47,8 @@ var insertAndPositionCompWithinComps = function() {
             var newY;
             var newScale;
             var newLayer;
-            for (var k = 0; k < this.arrSelectedComps.length; k++) {
-                selectedComp = this.arrSelectedComps[k];
+            for (var i = 0; i < this.arrSelectedComps.length; i++) {
+                selectedComp = this.arrSelectedComps[i];
                 if (compNeedsUpdate(selectedComp, compToPlace)) {
                     newLayer = selectedComp.layers.add(getComp(compToPlace));
                     newLayer.threeDLayer = false;
@@ -118,8 +118,8 @@ var insertAndPositionCompWithinComps = function() {
  * compToPlace The comp we are trying to insert and place.
  */
 function compNeedsUpdate(selectedComp, compToPlace) {
-    for (var j = 1; j <= selectedComp.layers.length; j++) {
-        if (selectedComp.layers[j].name.indexOf(compToPlace) > -1) {
+    for (var i = 1; i <= selectedComp.layers.length; i++) {
+        if (selectedComp.layers[i].name.indexOf(compToPlace) > -1) {
             return false;
         }
     }

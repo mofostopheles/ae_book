@@ -42,17 +42,17 @@ var searchAndReplaceLayerNames = function() {
             var layer;
             var changeMade;
             var selectedComp;
-            for (var k = 0; k < this.arrSelectedComps.length; k++) {
-                selectedComp = this.arrSelectedComps[k];
+            for (var i = 0; i < this.arrSelectedComps.length; i++) {
+                selectedComp = this.arrSelectedComps[i];
                 for (var j = 1; j <= selectedComp.layers.length; j++) {
                     layer = selectedComp.layers[j];
                     changeMade = false;
-                    for (var ii = 0; ii < searchAndReplaceBundle.length; ii++) {
-                        if (layer.name.indexOf(searchAndReplaceBundle[ii][0]) > -1) {
+                    for (var k = 0; k < searchAndReplaceBundle.length; k++) {
+                        if (layer.name.indexOf(searchAndReplaceBundle[k][0]) > -1) {
                             checkLock(layer);
                             layer.name = layer.name.replace(
-                                searchAndReplaceBundle[ii][0],
-                                searchAndReplaceBundle[ii][1]
+                                searchAndReplaceBundle[k][0],
+                                searchAndReplaceBundle[k][1]
                             );
                             changeMade = true;
                             checkLock(layer);
@@ -113,4 +113,5 @@ var vars = {
  * Calls main and passes args (if any).
  */
 searchAndReplaceLayerNames().main(vars.searchAndReplaceBundle);
+
 app.endUndoGroup();

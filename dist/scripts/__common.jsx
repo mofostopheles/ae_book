@@ -72,21 +72,21 @@ var getSelectedComps = function() {
  */
 function getKeyframesFromProperty(layer, layerProp, keysLength) {
     var targetKeyArray = [];
-    for (var ki = 1; ki <= keysLength; ki++) {
-        targetKeyArray[ki] = {
-            keyValue: layer.property(layerProp).keyValue(ki),
-            keyTime: layer.property(layerProp).keyTime(ki),
-            keyInInterpolationType: layer.property(layerProp).keyInInterpolationType(ki),
-            keyOutInterpolationType: layer.property(layerProp).keyOutInterpolationType(ki),
-            keyInSpatialTangent: layer.property(layerProp).keyInSpatialTangent(ki),
-            keyOutSpatialTangent: layer.property(layerProp).keyOutSpatialTangent(ki),
-            keyInTemporalEase: layer.property(layerProp).keyInTemporalEase(ki),
-            keyOutTemporalEase: layer.property(layerProp).keyOutTemporalEase(ki),
-            keySpatialAutoBezier: layer.property(layerProp).keySpatialAutoBezier(ki),
-            keySpatialContinuous: layer.property(layerProp).keySpatialContinuous(ki),
-            keyTemporalAutoBezier: layer.property(layerProp).keyTemporalAutoBezier(ki),
-            keyTemporalContinuous: layer.property(layerProp).keyTemporalContinuous(ki),
-            keyRoving: layer.property(layerProp).keyRoving(ki)
+    for (var i = 1; i <= keysLength; i++) {
+        targetKeyArray[i] = {
+            keyValue: layer.property(layerProp).keyValue(i),
+            keyTime: layer.property(layerProp).keyTime(i),
+            keyInInterpolationType: layer.property(layerProp).keyInInterpolationType(i),
+            keyOutInterpolationType: layer.property(layerProp).keyOutInterpolationType(i),
+            keyInSpatialTangent: layer.property(layerProp).keyInSpatialTangent(i),
+            keyOutSpatialTangent: layer.property(layerProp).keyOutSpatialTangent(i),
+            keyInTemporalEase: layer.property(layerProp).keyInTemporalEase(i),
+            keyOutTemporalEase: layer.property(layerProp).keyOutTemporalEase(i),
+            keySpatialAutoBezier: layer.property(layerProp).keySpatialAutoBezier(i),
+            keySpatialContinuous: layer.property(layerProp).keySpatialContinuous(i),
+            keyTemporalAutoBezier: layer.property(layerProp).keyTemporalAutoBezier(i),
+            keyTemporalContinuous: layer.property(layerProp).keyTemporalContinuous(i),
+            keyRoving: layer.property(layerProp).keyRoving(i)
         };
     }
     return targetKeyArray;
@@ -96,16 +96,16 @@ function getKeyframesFromProperty(layer, layerProp, keysLength) {
  * Sets keyframe values to a specific property.
  */
 function applyKeyframesToProperty(layer, layerProp, keysArray) {
-    for (var ki = 1; ki < keysArray.length; ki++) {
-        layer.property(layerProp).setValueAtTime(keysArray[ki].keyTime, keysArray[ki].keyValue);
+    for (var i = 1; i < keysArray.length; i++) {
+        layer.property(layerProp).setValueAtTime(keysArray[i].keyTime, keysArray[i].keyValue);
     }
-    for (ki = 1; ki < keysArray.length; ki++) {
-        keysArray[ki].keyTemporalAutoBezier ? layer.property(layerProp).setTemporalAutoBezierAtKey(ki, keysArray[ki].keySpatialAutoBezier) : false;
-        keysArray[ki].keyInSpatialTangent ? layer.property(layerProp).setSpatialTangentsAtKey(ki, keysArray[ki].keyInSpatialTangent, keysArray[ki].keyOutSpatialTangent) : false;
-        keysArray[ki].keyInTemporalEase ? layer.property(layerProp).setTemporalEaseAtKey(ki, keysArray[ki].keyInTemporalEase, keysArray[ki].keyOutTemporalEase) : false;
-        keysArray[ki].keySpatialContinuous ? layer.property(layerProp).setSpatialContinuousAtKey(ki, keysArray[ki].keySpatialContinuous) : false;
-        keysArray[ki].keyRoving ? layer.property(layerProp).setRovingAtKey(ki, keysArray[ki].keyRoving) : false;
-        layer.property(layerProp).setInterpolationTypeAtKey(ki, keysArray[ki].keyInInterpolationType, keysArray[ki].keyOutInterpolationType);
+    for (i = 1; i < keysArray.length; i++) {
+        keysArray[i].keyTemporalAutoBezier ? layer.property(layerProp).setTemporalAutoBezierAtKey(i, keysArray[i].keySpatialAutoBezier) : false;
+        keysArray[i].keyInSpatialTangent ? layer.property(layerProp).setSpatialTangentsAtKey(i, keysArray[i].keyInSpatialTangent, keysArray[i].keyOutSpatialTangent) : false;
+        keysArray[i].keyInTemporalEase ? layer.property(layerProp).setTemporalEaseAtKey(i, keysArray[i].keyInTemporalEase, keysArray[i].keyOutTemporalEase) : false;
+        keysArray[i].keySpatialContinuous ? layer.property(layerProp).setSpatialContinuousAtKey(i, keysArray[i].keySpatialContinuous) : false;
+        keysArray[i].keyRoving ? layer.property(layerProp).setRovingAtKey(i, keysArray[i].keyRoving) : false;
+        layer.property(layerProp).setInterpolationTypeAtKey(i, keysArray[i].keyInInterpolationType, keysArray[i].keyOutInterpolationType);
     }
 }
 
