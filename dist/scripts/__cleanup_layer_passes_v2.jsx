@@ -31,15 +31,19 @@ app.beginUndoGroup('work_undo');
  */
 var cleanupLayerPasses = function() {
     return {
-        main: function(stringToFind) {
+        main: function(stringsToFind) {
             var allComps = app.project.items;
             var removedCount = 0;
             var item;
             for (var i = allComps.length; i >= 1; i--) {
                 item = allComps[i];
-                if (item.name.indexOf(stringToFind) > -1) {
-                    item.remove();
-                    removedCount++;
+                for(var key in stringsToFind) {
+                    var value = stringsToFind[key];
+                    if (item.name.indexOf(value) > -1) {
+                        item.remove();
+                        removedCount++;
+                        break;
+                    }
                 }
             }
             aalert(removedCount + ' items were removed.');
@@ -51,13 +55,16 @@ var cleanupLayerPasses = function() {
  * Anything to be passed to the script's main method is set here.
  */
 var vars = {
-    stringToFind: 'remove after render'
+    stringToFind1: 'remove after render',
+    stringToFind2: '--blue-pass',
+    stringToFind3: '--red-pass',
+    stringToFind4: '--green-pass'
 };
 
 /**
  * Runs the script.
  * Calls main and passes args (if any).
  */
-cleanupLayerPasses().main(vars.stringToFind);
+cleanupLayerPasses().main(vars);
 
 app.endUndoGroup();
