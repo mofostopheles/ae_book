@@ -1,7 +1,9 @@
+# -*- coding: utf8 -*-
 from PIL import Image
 import os, sys, glob, subprocess, argparse, textwrap
 import lib.png_sprite_maker as _sprite_maker
 import lib.text_colors as _text_colors
+
 
 """
 	SCRIPT:
@@ -37,7 +39,7 @@ __version__ = "1.7"
 __date__ = "1/14/2020"
 
 
-class make_spritesFromSequences():
+class make_sprites_from_sequences():
 	"""
 	This script makes a 1 row horizontal sprite from PNGs that are already organized into directories.
 	Typically these would have been exported from After Effects using a PNG Sequence render output module.
@@ -212,8 +214,8 @@ class make_spritesFromSequences():
 						print("If you're seeing this error, make sure you are passing in -e magic on the command line. Does not work from within SUBLIME.")
 						raise e
 
-	def crop_image(self, p_image):
-		print("recropping ", p_image)
+	def crop_image(self, image_to_crop):
+		print("recropping ", image_to_crop)
 
 		# these must be even numbers
 		cropping_height_320x480 = 422
@@ -225,7 +227,7 @@ class make_spritesFromSequences():
 		cropping_height_120x600 = 590
 		cropping_height_336x280 = 240
 		cropped_image = None
-		recrop_image = p_image
+		recrop_image = image_to_crop
 		if self.working_dir_short_name.find("-layer1") > -1: # TOP IMAGE
 			if self.working_dir_short_name.find("320x480") > -1:
 				cropped_image = recrop_image.crop((0, 0, recrop_image.width, cropping_height_320x480))	# left top right bottom 423
@@ -263,8 +265,8 @@ class make_spritesFromSequences():
 
 		return cropped_image
 
-	def print_sprite_complete(self, p_name):
-		print("\nThe sprite " + _text_colors.KNOCKOUT + p_name + _text_colors.ENDC + " has been created.")
+	def print_sprite_complete(self, sprite_name):
+		print("\nThe sprite " + _text_colors.KNOCKOUT + sprite_name + _text_colors.ENDC + " has been created.")
 
 	def open_folder(self, p_dir):
 		if sys.platform == 'darwin':
@@ -275,15 +277,15 @@ class make_spritesFromSequences():
 			subprocess.Popen(['explorer', p_dir.replace("/", "\\")])
 
 
-	def local_print(self, p_message):
+	def local_print(self, string_message):
 		if self.verbose == True:
-			print(p_message)
+			print(string_message)
 
 # get our directories
 # assumes this script is running at sibling level to these folders
 dirs = next( os.walk('.') )[1]
 
-f = make_spritesFromSequences()
+f = make_sprites_from_sequences()
 
 for dir_name in dirs:
 	# important and basic check so we don't try to process the "processed" folder
