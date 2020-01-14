@@ -1,17 +1,11 @@
 # -*- coding: utf8 -*-
-
 """
-	SCRIPT:
-	png_sprite_maker.py
-
-	SYNOPSIS:
 	Utility module for making sprites.
 
-	USAGE:
+	USAGE
 	• Called by make_sprites_from_sequences.py
-"""
 
-"""
+	LICENSE
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Lesser General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
@@ -25,13 +19,12 @@
     You should have received a copy of the GNU Lesser General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
+from PIL import Image
+import lib.text_colors as _text_colors
 
 __author__ = "Arlo Emerson <arloemerson@gmail.com>"
 __version__ = "2.1"
 __date__ = "1/14/2020"
-
-from PIL import Image
-import lib.text_colors as _text_colors
 
 def make_sprite(file_names,frame_count,image_width,image_height):
 	"""Typically called by upstream process, make_sprites_from_sequences.py"""

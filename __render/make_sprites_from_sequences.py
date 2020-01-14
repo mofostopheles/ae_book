@@ -1,45 +1,34 @@
 # -*- coding: utf8 -*-
-from PIL import Image
-import os, sys, glob, subprocess, argparse, textwrap
-import lib.png_sprite_maker as _sprite_maker
-import lib.text_colors as _text_colors
-
-
-"""
-	SCRIPT:
-	make_sprites_from_sequences.py
-
-	SYNOPSIS:
-	This script makes a 1 row horizontal sprite from PNGs that are already organized into directories.
-	Typically these would have been exported from After Effects using a PNG Sequence render output module.
-
-	USAGE:
+'''
+	USAGE
 	• Place this script and the lib folder at the sibling level of the PNG folders you want to convert e.g. in your render/output folder.
 	• Nothing to set, you just run the script. If there are directories containing PNGs, a sprite will be constructed for each unique set.
 	• Directories with names like "misc" or "processed" or "boneyard", etc, will be ignored. All other directories are globbed for *.png files.
-"""
 
-"""
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Lesser General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+	LICENSE
+	This program is free software: you can redistribute it and/or modify
+	it under the terms of the GNU Lesser General Public License as published by
+	the Free Software Foundation, either version 3 of the License, or
+	(at your option) any later version.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU Lesser General Public License for more details.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU Lesser General Public License for more details.
 
-    You should have received a copy of the GNU Lesser General Public License
-    along with this program.  If not, see <https://www.gnu.org/licenses/>.
-"""
+	You should have received a copy of the GNU Lesser General Public License
+	along with this program.  If not, see <https://www.gnu.org/licenses/>.
+'''
+import os, sys, glob, subprocess, argparse, textwrap
+from PIL import Image
+import lib.png_sprite_maker as _sprite_maker
+import lib.text_colors as _text_colors
 
 __author__ = "Arlo Emerson <arloemerson@gmail.com>"
 __version__ = "1.7"
 __date__ = "1/14/2020"
 
-
-class make_sprites_from_sequences():
+class MakeSpritesFromSequences():
 	"""
 	This script makes a 1 row horizontal sprite from PNGs that are already organized into directories.
 	Typically these would have been exported from After Effects using a PNG Sequence render output module.
@@ -63,21 +52,33 @@ class make_sprites_from_sequences():
 		self.line = "-----------------------------"
 		self.SPRITE_PREFIX = "sprite-"
 
-		parser = argparse.ArgumentParser(description='This script makes a 1 row horizontal sprite from ' + _text_colors.WARNING + 'PNGs that are already organized into directories. ' + _text_colors.ENDC + ' Typically these would have been exported from After Effects using the built-in PNG Sequence render output module.',
-			epilog=textwrap.dedent('''Setup:
-• Place this script and the lib folder at the sibling level of the PNG folders you want to convert e.g. in your render/output folder.
+		self.setup_parser()
 
-• Nothing to set, you just run the script. If there are directories containing PNGs, a sprite will be constructed for each unique set.
-
-• Directories with names like "misc" or "processed" or "boneyard", etc, will be ignored. All other directories are globbed for *.png files.'''), formatter_class=argparse.RawTextHelpFormatter)
-		parser.add_argument('-vert', '--vertical', dest='vertical', action='store_true', help="For making vertical sprites. Default is horizontal.")
-		parser.add_argument('-e', '--encoder', dest='encoder', required=False, help="The specific lib to use to encode the output. Default encoder is Pillow. Use -e imagemagic|magic to use the size constraint feature which looks something like: " + _text_colors.WHITE + "python make_sprites_from_sequences.py -t jpg -e magic -x 700" + _text_colors.ENDC)
-		parser.add_argument('-t', '--type', dest='type', required=False, help="For JPEG output use -type jpg|JPG|jpeg|JPEG. Default output is PNG.")
+	def setup_parser(self):
+		'''Capture args from the command line'''
+		parser = argparse.ArgumentParser( \
+			description='This script makes a 1 row horizontal sprite from ' + \
+			_text_colors.WARNING + 'PNGs that are already organized into directories. ' + \
+			_text_colors.ENDC + '\nTypically these would have been exported from After Effects\nusing the built-in PNG Sequence render output module.', \
+			epilog=textwrap.dedent('''Setup: ''' + \
+	'''
+	• Place this script and the lib folder at the sibling level of the\n''' + \
+	'''\t  PNG folders you want to convert e.g. in your render/output folder.
+	• Nothing to set, you just run the script. If there are directories\n''' + \
+	'''\t  containing PNGs, a sprite will be constructed for each unique set.
+	• Directories with names like "misc" or "processed" or "boneyard",\n''' + \
+	'''\t  etc, will be ignored. All other directories are globbed for *.png files.''' \
+	), formatter_class=argparse.RawTextHelpFormatter)
+		parser.add_argument('-vert', '--vertical', dest='vertical', action='store_true', help="For making vertical sprites.\nDefault is horizontal.")
+		parser.add_argument('-e', '--encoder', dest='encoder', required=False, help="The specific lib to use to encode the output.\n" + \
+			"Default encoder is Pillow.\nUse -e imagemagic|magic to use the size constraint feature which looks something like:\n" + \
+			_text_colors.OKGREEN + "python3 make_sprites_from_sequences.py -t jpg -e magic -x 700" + _text_colors.ENDC)
+		parser.add_argument('-t', '--type', dest='type', required=False, help="For JPEG output use -type jpg|JPG|jpeg|JPEG.\nDefault output is PNG.")
 		parser.add_argument('-x', '--extent', dest='extent', required=False, help="Sets the extent flag in the ImageMagick conversion.")
-		parser.add_argument('-q', '--quality', dest='quality', required=False, help="e.g. For JPEG with quality 80 use -q 80. Default quality is 70.")
-		parser.add_argument('-qset', dest='qset', action='store_true', help="e.g. To export a range of quality settings 50 through 100. Default quality is 70.")
-		parser.add_argument('-v','--verbose', dest='verbose', action='store_true', help="Explain what is being done.")
-		parser.add_argument('-crop','--crop', dest='crop', action='store_true', help="Auto crop the sprites per spec.")
+		parser.add_argument('-q', '--quality', dest='quality', required=False, help="e.g. For JPEG with quality 80 use -q 80.\nDefault quality is 70.")
+		parser.add_argument('-qset', dest='qset', action='store_true', help="e.g. To export a range of quality settings 50 through 100.\nDefault quality is 70.")
+		parser.add_argument('-v', '--verbose', dest='verbose', action='store_true', help="Explain what is being done.")
+		parser.add_argument('-crop', '--crop', dest='crop', action='store_true', help="Auto crop the sprites per spec.")
 		parser.add_argument('--version', action='version', version='%(prog)s ' + __version__)
 		args = parser.parse_args()
 
@@ -98,7 +99,7 @@ class make_sprites_from_sequences():
 
 		if args.verbose:
 			self.verbose = args.verbose
-			if self.verbose == True:
+			if self.verbose:
 				print("Verbose mode")
 
 		if args.crop:
@@ -113,7 +114,7 @@ class make_sprites_from_sequences():
 		if args.extent:
 			self.extent = args.extent.lower()
 
-			if args.encoder == False: # extent was set but the encoder was not, so assume ImageMagick is desired.
+			if not args.encoder: # extent was set but the encoder was not, so assume ImageMagick is desired.
 				self.encoder = "magic"
 
 			print("extent: " + args.extent)
@@ -130,8 +131,8 @@ class make_sprites_from_sequences():
 			self.quality = args.quality
 			print("JPG quality set to " + str(args.quality))
 
-			if args.encoder != None and "magic" in args.encoder:
-				print( _text_colors.WARNING + "You set the quality flag to " + self.quality + " but encoder is ImageMagick with the default extent flag built in. If you want to set quality use the default encoder by omitting -e magic or using -e pillow." + _text_colors.ENDC)
+			if args.encoder is not None and "magic" in args.encoder:
+				print(_text_colors.WARNING + "You set the quality flag to " + self.quality + " but encoder is ImageMagick with the default extent flag built in. If you want to set quality use the default encoder by omitting -e magic or using -e pillow." + _text_colors.ENDC)
 		else:
 			if self.output_type != "png":
 				print("Will use JPG 70 quality.")
@@ -146,23 +147,23 @@ class make_sprites_from_sequences():
 		print(self.line)
 
 	def main(self):
+		'''Main method of class.'''
 		print(self.line)
-		files = sorted( glob.glob( str( self.working_dir )  + '*.png') )
+		files = sorted(glob.glob(str(self.working_dir)  + '*.png'))
 
-		if len( files ) == 0:
+		if len(files) == 0:
 			print(_text_colors.WARNING + "Found nothing to convert in " + _text_colors.ENDC + _text_colors.CYAN + self.working_dir + _text_colors.ENDC)
 			return
 
-		numberOfFrames = len( files ) # this equates to number of frames in the sprite
-		self.local_print(_text_colors.WHITE + "Number of frames: " + _text_colors.ENDC + _text_colors.CYAN + str( numberOfFrames ) + _text_colors.ENDC)
-		tmp_image=Image.open( files[0] )
+		numberOfFrames = len(files) # this equates to number of frames in the sprite
+		self.local_print(_text_colors.WHITE + "Number of frames: " + _text_colors.ENDC + _text_colors.CYAN + str(numberOfFrames) + _text_colors.ENDC)
+		tmp_image = Image.open(files[0])
 
 		if self.vertical:
-			processedSprite = _sprite_maker.make_vertical_sprite(files,numberOfFrames,tmp_image.size[0],tmp_image.size[1])
+			processedSprite = _sprite_maker.make_vertical_sprite(files, numberOfFrames, tmp_image.size[0], tmp_image.size[1])
 		else:
-			processedSprite = _sprite_maker.make_sprite(files,numberOfFrames,tmp_image.size[0],tmp_image.size[1])
+			processedSprite = _sprite_maker.make_sprite(files, numberOfFrames, tmp_image.size[0], tmp_image.size[1])
 
-		strDirectory = str(self.working_dir)
 		strFileName = self.SPRITE_PREFIX + self.working_dir_short_name + ".png"
 
 		if self.output_type == "png":
@@ -174,14 +175,14 @@ class make_sprites_from_sequences():
 		else:
 			if self.qset:
 				qset = self.qset_list # 100 disables portions of the JPEG compression algorithm, and results in large files with hardly any gain in image quality.
-				self.local_print(_text_colors.WHITE + "Using this qset: " + _text_colors.ENDC + _text_colors.CYAN + str( self.qset_list ) + _text_colors.ENDC)
+				self.local_print(_text_colors.WHITE + "Using this qset: " + _text_colors.ENDC + _text_colors.CYAN + str(self.qset_list) + _text_colors.ENDC)
 			else:
 				qset = [self.quality]
-				self.local_print(_text_colors.WHITE + "Using JPG quality of "  + _text_colors.ENDC + _text_colors.CYAN + str( self.quality ) + _text_colors.ENDC)
+				self.local_print(_text_colors.WHITE + "Using JPG quality of "  + _text_colors.ENDC + _text_colors.CYAN + str(self.quality) + _text_colors.ENDC)
 
 			for q in qset:
 
-				if self.crop == True: # crop the sprite according to the crop specs
+				if self.crop: # crop the sprite according to the crop specs
 					processedSprite = self.crop_image(processedSprite)
 
 				# if there is an alpha channel this will remove it
@@ -201,20 +202,19 @@ class make_sprites_from_sequences():
 						fullFilePath = strFileName
 
 						processedSprite.save(fullFilePath + ".png") # this is really a temp file
-						self.local_print(_text_colors.WHITE + "Converting with " + _text_colors.ENDC + _text_colors.CYAN + str( self.extent ) + _text_colors.ENDC + _text_colors.WHITE + " KB extent" + _text_colors.ENDC)
+						self.local_print(_text_colors.WHITE + "Converting with " + _text_colors.ENDC + _text_colors.CYAN + str(self.extent) + _text_colors.ENDC + _text_colors.WHITE + " KB extent" + _text_colors.ENDC)
 						arg = "convert " + fullFilePath + ".png -define jpeg:extent=" + str(self.extent) + "kb " + fullFilePath
 						self.local_print(_text_colors.DARKGREEN + arg + _text_colors.ENDC)
-						os.system( arg )
-						os.system( "rm " + fullFilePath + ".png" ) # remove the temp file
+						os.system(arg)
+						os.system("rm " + fullFilePath + ".png") # remove the temp file
 						self.local_print(_text_colors.WHITE + "Removed a temp PNG file." + _text_colors.ENDC)
 						self.print_sprite_complete(fullFilePath)
-
-						pass
 					except Exception as e:
 						print("If you're seeing this error, make sure you are passing in -e magic on the command line. Does not work from within SUBLIME.")
 						raise e
 
 	def crop_image(self, image_to_crop):
+		'''Crop an image based on name/size.'''
 		print("recropping ", image_to_crop)
 
 		# these must be even numbers
@@ -266,9 +266,11 @@ class make_sprites_from_sequences():
 		return cropped_image
 
 	def print_sprite_complete(self, sprite_name):
+		'''End of process, tell user we are done.'''
 		print("\nThe sprite " + _text_colors.KNOCKOUT + sprite_name + _text_colors.ENDC + " has been created.")
 
 	def open_folder(self, p_dir):
+		'''Open the directory where the sprites are.'''
 		if sys.platform == 'darwin':
 			subprocess.Popen(['open', '--', p_dir])
 		elif sys.platform == 'linux2':
@@ -278,33 +280,25 @@ class make_sprites_from_sequences():
 
 
 	def local_print(self, string_message):
-		if self.verbose == True:
+		'''Print to console if verbose.'''
+		if self.verbose:
 			print(string_message)
 
 # get our directories
 # assumes this script is running at sibling level to these folders
-dirs = next( os.walk('.') )[1]
+DIRS = next(os.walk('.'))[1]
 
-f = make_sprites_from_sequences()
+# instantiate the class
+WORKER = MakeSpritesFromSequences()
 
-for dir_name in dirs:
+for dir_name in DIRS:
 	# important and basic check so we don't try to process the "processed" folder
 	# if you have other folder titles you'd like to avoid processing, add them here
-	if dir_name != "processed" and \
-	   dir_name != "misc" and \
-	   dir_name != "lib" and \
-	   dir_name != "boneyard" and \
-	   dir_name != "archive":
-		f.working_dir_short_name = dir_name
-		f.working_dir = dir_name + "/"
+	if dir_name not in ('processed', 'misc', 'lib', 'boneyard', 'archive'):
+		WORKER.working_dir_short_name = dir_name
+		WORKER.working_dir = dir_name + "/"
 		try:
-			f.main()
+			WORKER.main() # call main on WORKER
 		except Exception as e:
-			print("¯\\_( :-/ )_/¯  Whooops!")
+			print("¯\\_(:-/)_/¯  Whooops!")
 			raise e
-
-
-
-
-
-
