@@ -37,8 +37,8 @@ var searchAndReplaceCompNames = function() {
         main: function(stringToFind, stringReplacement) {
             var compsChangedCounter = 0;
             var selectedComp;
-            for (var k = 0; k < this.arrSelectedComps.length; k++) {
-                selectedComp = this.arrSelectedComps[k];
+            for (var i = 0; i < this.arrSelectedComps.length; i++) {
+                selectedComp = this.arrSelectedComps[i];
                 if (selectedComp.name.indexOf(stringToFind) > -1) {
                     selectedComp.name = selectedComp.name.replace(stringToFind, stringReplacement);
                     compsChangedCounter++;

@@ -38,14 +38,14 @@ var renderLayerPasses = function() {
             var listOfTags;
             var layerSettings;
             var selectedComp;
-            for (var k = 0; k < this.arrSelectedComps.length; k++) {
-                selectedComp = this.arrSelectedComps[k];
+            for (var i = 0; i < this.arrSelectedComps.length; i++) {
+                selectedComp = this.arrSelectedComps[i];
                 listOfTags = [];
                 layerSettings = [];
                 // loop all the layers and scrape a list of tags
-                for (var i = 1; i <= selectedComp.numLayers; i++) {
-                    if (selectedComp.layers[i].name.indexOf('#') > -1) {
-                        tag = selectedComp.layers[i].name.slice(selectedComp.layers[i].name.indexOf('#'), selectedComp.layers[i].name.length);
+                for (var j = 1; j <= selectedComp.numLayers; j++) {
+                    if (selectedComp.layers[j].name.indexOf('#') > -1) {
+                        tag = selectedComp.layers[j].name.slice(selectedComp.layers[j].name.indexOf('#'), selectedComp.layers[j].name.length);
                         if (listOfTags.indexOf(tag) === -1) {
                             listOfTags.push(tag);
                         }
@@ -54,9 +54,9 @@ var renderLayerPasses = function() {
                     // also store the enabled setting of each layer
                     // we want to restore the comp to original settings at the end of the entire process
                     layer = {};
-                    layer.ref = selectedComp.layers[i];
-                    layer.enabled = selectedComp.layers[i].enabled;
-                    layer.audioEnabled = selectedComp.layers[i].audioEnabled;
+                    layer.ref = selectedComp.layers[j];
+                    layer.enabled = selectedComp.layers[j].enabled;
+                    layer.audioEnabled = selectedComp.layers[j].audioEnabled;
                     layerSettings.push(layer);
                 }
 
@@ -65,22 +65,22 @@ var renderLayerPasses = function() {
                 }
 
                 // iterate the tags array and build up the render queue based on these layers
-                for (t = 0; t < listOfTags.length; t++) {
-                    for (var ii = 1; ii <= selectedComp.numLayers; ii++) {
+                for (var j = 0; j < listOfTags.length; j++) {
+                    for (var k = 1; k <= selectedComp.numLayers; k++) {
                         // layer name needs to contain hashtag
-                        if (selectedComp.layers[ii].name.indexOf(listOfTags[t]) > -1) {
+                        if (selectedComp.layers[k].name.indexOf(listOfTags[j]) > -1) {
                             // don't turn on visibility aka 'enable' for matte channels
-                            if (!selectedComp.layers[ii].isTrackMatte) {
-                                selectedComp.layers[ii].enabled = true;
+                            if (!selectedComp.layers[k].isTrackMatte) {
+                                selectedComp.layers[k].enabled = true;
                             }
 
-                            if (selectedComp.layers[ii].hasAudio === true) {
-                                selectedComp.layers[ii].audioEnabled = true;
+                            if (selectedComp.layers[k].hasAudio === true) {
+                                selectedComp.layers[k].audioEnabled = true;
                             }
                         } else {
-                            selectedComp.layers[ii].enabled = false;
-                            if (selectedComp.layers[ii].audioEnabled === true) {
-                                selectedComp.layers[ii].audioEnabled = false;
+                            selectedComp.layers[k].enabled = false;
+                            if (selectedComp.layers[k].audioEnabled === true) {
+                                selectedComp.layers[k].audioEnabled = false;
                             }
                         }
                     }
@@ -100,11 +100,11 @@ var renderLayerPasses = function() {
                     renderQueueItem = app.project.renderQueue.items.add(dupeSelectedComp);
 
                     // set the template accordingly
-                    if ((listOfTags[t].indexOf('aud') > -1) ||
-                        (listOfTags[t].indexOf('VO') > -1) ||
-                        (listOfTags[t].indexOf('mus') > -1)) {
+                    if ((listOfTags[j].indexOf('aud') > -1) ||
+                        (listOfTags[j].indexOf('VO') > -1) ||
+                        (listOfTags[j].indexOf('mus') > -1)) {
                         renderQueueItem.outputModule(1).applyTemplate('_wave');
-                    } else if (listOfTags[t].indexOf('seq') > -1) {
+                    } else if (listOfTags[j].indexOf('seq') > -1) {
                         renderQueueItem.outputModule(1).applyTemplate('_pngSequence');
                     } else {
                         renderQueueItem.outputModule(1).applyTemplate('_unmattedAlpha');
@@ -112,17 +112,17 @@ var renderLayerPasses = function() {
 
                     renderOutputModule = renderQueueItem.outputModule(1);
                     modifiedFileName = renderOutputModule.file.toString().slice(0, -4); // trim off the dot file extension
-                    tagName = listOfTags[t].substring(1) + renderOutputModule.file.toString().slice(-4);
+                    tagName = listOfTags[j].substring(1) + renderOutputModule.file.toString().slice(-4);
                     modifiedFileName += '_' + tagName;
                     renderOutputModule.file = new File(modifiedFileName);
-                    dupeSelectedComp.name = dupeSelectedComp.name + ' -- ' + listOfTags[t].substring(1) + ' -- remove after render';
+                    dupeSelectedComp.name = dupeSelectedComp.name + ' -- ' + listOfTags[j].substring(1) + ' -- remove after render';
                 }
 
                 // reset the layers enabled property to original
-                for (i = 0; i < layerSettings.length; i++) {
-                    layerSettings[i].ref.enabled = layerSettings[i].enabled;
-                    if (layerSettings[i].audioEnabled === true) {
-                        layerSettings[i].ref.audioEnabled = layerSettings[i].audioEnabled;
+                for (var j = 0; j < layerSettings.length; j++) {
+                    layerSettings[j].ref.enabled = layerSettings[j].enabled;
+                    if (layerSettings[j].audioEnabled === true) {
+                        layerSettings[j].ref.audioEnabled = layerSettings[j].audioEnabled;
                     }
                 }
 

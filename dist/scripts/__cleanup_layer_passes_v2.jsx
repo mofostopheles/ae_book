@@ -1,5 +1,6 @@
 /**
- * An After Effects script for appending strings to the end of comp names.
+ * An After Effects script for removing unwanted comps from the project pane.
+ * Run this after using __render_layer_passes.jsx.
  */
 
 // Copyright © 2020, Arlo Emerson
@@ -26,23 +27,26 @@ app.beginUndoGroup('work_undo');
 
 /**
  * Function with inner main function. Invoked at bottom of this file.
- * Appends comp names with main's params.
+ * Removes unwanted comps from project pane.
  */
-var appendCompNamesWithString = function() {
+var cleanupLayerPasses = function() {
     return {
-        arrSelectedComps: getSelectedComps(),
-        /**
-         * stringToAppend The string to append to the selected comps names.
-         */
-        main: function(stringToAppend) {
-            var compsChangedCounter = 0;
-            var selectedComp;
-            for (var i = 0; i < this.arrSelectedComps.length; i++) {
-                selectedComp = this.arrSelectedComps[i];
-                selectedComp.name = selectedComp.name + stringToAppend;
-                compsChangedCounter++;
+        main: function(stringsToFind) {
+            var allComps = app.project.items;
+            var removedCount = 0;
+            var item;
+            for (var i = allComps.length; i >= 1; i--) {
+                item = allComps[i];
+                for(var key in stringsToFind) {
+                    var value = stringsToFind[key];
+                    if (item.name.indexOf(value) > -1) {
+                        item.remove();
+                        removedCount++;
+                        break;
+                    }
+                }
             }
-            aalert(compsChangedCounter + ' comp/s total touched.');
+            aalert(removedCount + ' items were removed.');
         }
     };
 };
@@ -51,13 +55,16 @@ var appendCompNamesWithString = function() {
  * Anything to be passed to the script's main method is set here.
  */
 var vars = {
-    stringToAppend: '-es-US' // String to append to selected comps.
+    stringToFind1: 'remove after render',
+    stringToFind2: '--blue-pass',
+    stringToFind3: '--red-pass',
+    stringToFind4: '--green-pass'
 };
 
 /**
  * Runs the script.
  * Calls main and passes args (if any).
  */
-appendCompNamesWithString().main(vars.stringToAppend);
+cleanupLayerPasses().main(vars);
 
 app.endUndoGroup();

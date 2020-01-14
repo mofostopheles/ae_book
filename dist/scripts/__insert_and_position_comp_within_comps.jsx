@@ -47,8 +47,8 @@ var insertAndPositionCompWithinComps = function() {
             var newX;
             var newY;
             var newScale;
-            for (var k = 0; k < this.arrSelectedComps.length; k++) {
-                selectedComp = this.arrSelectedComps[k];
+            for (var i = 0; i < this.arrSelectedComps.length; i++) {
+                selectedComp = this.arrSelectedComps[i];
                 newLayer = selectedComp.layers.add(getComp(compToPlace));
                 newLayer.threeDLayer = false;
                 newLayer.blendingMode = BlendingMode.MULTIPLY;
