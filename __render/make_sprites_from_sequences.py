@@ -1,16 +1,14 @@
-#!/usr/bin/env python
-# -*- coding: utf8 -*-
-
-__author__ = "Arlo Emerson <arloemerson@gmail.com>"
-__version__ = "1.6"
-__date__ = "1/3/2020"
+from PIL import Image
+import os, sys, glob, subprocess, argparse, textwrap
+import lib.png_sprite_maker as _sprite_maker
+import lib.text_colors as _text_colors
 
 """
-	SCRIPT: 
+	SCRIPT:
 	make_sprites_from_sequences.py
 
 	SYNOPSIS:
-	This script makes a 1 row horizontal sprite from PNGs that are already organized into directories. 
+	This script makes a 1 row horizontal sprite from PNGs that are already organized into directories.
 	Typically these would have been exported from After Effects using a PNG Sequence render output module.
 
 	USAGE:
@@ -34,13 +32,16 @@ __date__ = "1/3/2020"
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 
-import os, sys, glob, subprocess, argparse, textwrap
-import lib.png_sprite_maker as _sprite_maker
-import lib.TextColors as _text_colors
-from PIL import Image
+__author__ = "Arlo Emerson <arloemerson@gmail.com>"
+__version__ = "1.7"
+__date__ = "1/14/2020"
+
 
 class make_spritesFromSequences():
-
+	"""
+	This script makes a 1 row horizontal sprite from PNGs that are already organized into directories.
+	Typically these would have been exported from After Effects using a PNG Sequence render output module.
+	"""
 	def __init__(self):
 		print("Running " + _text_colors.HEADERLEFT2 + _text_colors.INVERTED + self.__class__.__name__ + " " + _text_colors.ENDC)
 
@@ -60,7 +61,7 @@ class make_spritesFromSequences():
 		self.line = "-----------------------------"
 		self.SPRITE_PREFIX = "sprite-"
 
-		parser = argparse.ArgumentParser(description='This script makes a 1 row horizontal sprite from ' + _text_colors.WARNING + 'PNGs that are already organized into directories. ' + _text_colors.ENDC + ' Typically these would have been exported from After Effects using the built-in PNG Sequence render output module.', 
+		parser = argparse.ArgumentParser(description='This script makes a 1 row horizontal sprite from ' + _text_colors.WARNING + 'PNGs that are already organized into directories. ' + _text_colors.ENDC + ' Typically these would have been exported from After Effects using the built-in PNG Sequence render output module.',
 			epilog=textwrap.dedent('''Setup:
 • Place this script and the lib folder at the sibling level of the PNG folders you want to convert e.g. in your render/output folder.
 
@@ -72,12 +73,12 @@ class make_spritesFromSequences():
 		parser.add_argument('-t', '--type', dest='type', required=False, help="For JPEG output use -type jpg|JPG|jpeg|JPEG. Default output is PNG.")
 		parser.add_argument('-x', '--extent', dest='extent', required=False, help="Sets the extent flag in the ImageMagick conversion.")
 		parser.add_argument('-q', '--quality', dest='quality', required=False, help="e.g. For JPEG with quality 80 use -q 80. Default quality is 70.")
-		parser.add_argument('-qset', dest='qset', action='store_true', help="e.g. To export a range of quality settings 50 through 100. Default quality is 70.")		
+		parser.add_argument('-qset', dest='qset', action='store_true', help="e.g. To export a range of quality settings 50 through 100. Default quality is 70.")
 		parser.add_argument('-v','--verbose', dest='verbose', action='store_true', help="Explain what is being done.")
 		parser.add_argument('-crop','--crop', dest='crop', action='store_true', help="Auto crop the sprites per spec.")
 		parser.add_argument('--version', action='version', version='%(prog)s ' + __version__)
 		args = parser.parse_args()
-		
+
 		print("\n----- PREFLIGHT SUMMARY -----")
 
 		if args.type:
@@ -88,14 +89,14 @@ class make_spritesFromSequences():
 				if "magic" in args.encoder:
 					print(_text_colors.WARNING + "No file type was specified, but assuming JPG since you invoked ImageMagick." + _text_colors.ENDC)
 					self.output_type = "jpg"
-				else:	
+				else:
 					print("Will create PNG sprites.")
 			else:
 				print("Will create PNG sprites.")
 
 		if args.verbose:
 			self.verbose = args.verbose
-			if self.verbose == True:			
+			if self.verbose == True:
 				print("Verbose mode")
 
 		if args.crop:
@@ -145,7 +146,7 @@ class make_spritesFromSequences():
 	def main(self):
 		print(self.line)
 		files = sorted( glob.glob( str( self.working_dir )  + '*.png') )
-		
+
 		if len( files ) == 0:
 			print(_text_colors.WARNING + "Found nothing to convert in " + _text_colors.ENDC + _text_colors.CYAN + self.working_dir + _text_colors.ENDC)
 			return
@@ -153,7 +154,7 @@ class make_spritesFromSequences():
 		numberOfFrames = len( files ) # this equates to number of frames in the sprite
 		self.local_print(_text_colors.WHITE + "Number of frames: " + _text_colors.ENDC + _text_colors.CYAN + str( numberOfFrames ) + _text_colors.ENDC)
 		tmp_image=Image.open( files[0] )
-		
+
 		if self.vertical:
 			processedSprite = _sprite_maker.make_vertical_sprite(files,numberOfFrames,tmp_image.size[0],tmp_image.size[1])
 		else:
@@ -165,9 +166,9 @@ class make_spritesFromSequences():
 		if self.output_type == "png":
 			if processedSprite:
 				processedSprite.save(strFileName)
-				self.print_sprite_complete(strFileName)		
+				self.print_sprite_complete(strFileName)
 			else:
-				print(_text_colors.FAIL + "Failed to make sprite " +  _text_colors.ENDC + _text_colors.WHITE + strFileName + _text_colors.ENDC)			
+				print(_text_colors.FAIL + "Failed to make sprite " +  _text_colors.ENDC + _text_colors.WHITE + strFileName + _text_colors.ENDC)
 		else:
 			if self.qset:
 				qset = self.qset_list # 100 disables portions of the JPEG compression algorithm, and results in large files with hardly any gain in image quality.
@@ -175,7 +176,7 @@ class make_spritesFromSequences():
 			else:
 				qset = [self.quality]
 				self.local_print(_text_colors.WHITE + "Using JPG quality of "  + _text_colors.ENDC + _text_colors.CYAN + str( self.quality ) + _text_colors.ENDC)
-			
+
 			for q in qset:
 
 				if self.crop == True: # crop the sprite according to the crop specs
@@ -183,15 +184,15 @@ class make_spritesFromSequences():
 
 				# if there is an alpha channel this will remove it
 				dealphaImage = processedSprite.convert("RGB")
-				
+
 				if self.encoder == "pillow":
 					# strFileName = self.SPRITE_PREFIX + self.working_dir_short_name + "-q" + str(q) + ".jpg"
 					strFileName = self.SPRITE_PREFIX + self.working_dir_short_name + ".jpg"
 					fullFilePath = strFileName
 					self.local_print(_text_colors.WHITE + "Quality set to " + str(q) + _text_colors.ENDC)
-					dealphaImage.save(fullFilePath, format='JPEG', subsampling=0, quality=int(q), optimize=True, progressive=True)	
+					dealphaImage.save(fullFilePath, format='JPEG', subsampling=0, quality=int(q), optimize=True, progressive=True)
 					self.print_sprite_complete(fullFilePath)
-				
+
 				elif self.encoder == "magic" or self.encoder == "imagemagic":
 					try:
 						strFileName = self.SPRITE_PREFIX + self.working_dir_short_name + ".jpg"
@@ -210,7 +211,7 @@ class make_spritesFromSequences():
 					except Exception as e:
 						print("If you're seeing this error, make sure you are passing in -e magic on the command line. Does not work from within SUBLIME.")
 						raise e
-	
+
 	def crop_image(self, p_image):
 		print("recropping ", p_image)
 
@@ -223,47 +224,47 @@ class make_spritesFromSequences():
 		cropping_height_640x480 = 404
 		cropping_height_120x600 = 590
 		cropping_height_336x280 = 240
-		cropped_image = None			
+		cropped_image = None
 		recrop_image = p_image
-		if self.working_dir_short_name.find("-layer1") > -1: # TOP IMAGE							
-			if self.working_dir_short_name.find("320x480") > -1:									
-				cropped_image = recrop_image.crop((0, 0, recrop_image.width, cropping_height_320x480))	# left top right bottom 423				
-			elif self.working_dir_short_name.find("300x250") > -1:									
+		if self.working_dir_short_name.find("-layer1") > -1: # TOP IMAGE
+			if self.working_dir_short_name.find("320x480") > -1:
+				cropped_image = recrop_image.crop((0, 0, recrop_image.width, cropping_height_320x480))	# left top right bottom 423
+			elif self.working_dir_short_name.find("300x250") > -1:
 				cropped_image = recrop_image.crop((0, 0, recrop_image.width, cropping_height_300x250))
-			elif self.working_dir_short_name.find("160x600") > -1:		
+			elif self.working_dir_short_name.find("160x600") > -1:
 				cropped_image = recrop_image.crop((0, 0, recrop_image.width, cropping_height_160x600))
-			elif self.working_dir_short_name.find("300x600") > -1:									
+			elif self.working_dir_short_name.find("300x600") > -1:
 				cropped_image = recrop_image.crop((0, 0, recrop_image.width, cropping_height_300x600))
-			elif self.working_dir_short_name.find("480x320") > -1:									
+			elif self.working_dir_short_name.find("480x320") > -1:
 				cropped_image = recrop_image.crop((0, 0, recrop_image.width, cropping_height_480x320))
-			elif self.working_dir_short_name.find("640x480") > -1:									
+			elif self.working_dir_short_name.find("640x480") > -1:
 				cropped_image = recrop_image.crop((0, 0, recrop_image.width, cropping_height_640x480))
-			elif self.working_dir_short_name.find("120x600") > -1:									
+			elif self.working_dir_short_name.find("120x600") > -1:
 				cropped_image = recrop_image.crop((0, 0, recrop_image.width, cropping_height_120x600))
-			elif self.working_dir_short_name.find("336x280") > -1:									
+			elif self.working_dir_short_name.find("336x280") > -1:
 				cropped_image = recrop_image.crop((0, 0, recrop_image.width, cropping_height_336x280))
 		elif self.working_dir_short_name.find("-layer0") > -1: # BOTTOM IMAGE
 			if self.working_dir_short_name.find("320x480") > -1:
 				cropped_image = recrop_image.crop((0, cropping_height_320x480, recrop_image.width, recrop_image.height))
-			elif self.working_dir_short_name.find("300x250") > -1:									
-				cropped_image = recrop_image.crop((0, cropping_height_300x250, recrop_image.width, recrop_image.height))							
-			elif self.working_dir_short_name.find("160x600") > -1:									
-				cropped_image = recrop_image.crop((0, cropping_height_160x600, recrop_image.width, recrop_image.height))							
-			elif self.working_dir_short_name.find("300x600") > -1:									
-				cropped_image = recrop_image.crop((0, cropping_height_300x600, recrop_image.width, recrop_image.height))							
-			elif self.working_dir_short_name.find("480x320") > -1:									
-				cropped_image = recrop_image.crop((0, cropping_height_480x320, recrop_image.width, recrop_image.height))							
-			elif self.working_dir_short_name.find("640x480") > -1:									
-				cropped_image = recrop_image.crop((0, cropping_height_640x480, recrop_image.width, recrop_image.height))							
-			elif self.working_dir_short_name.find("120x600") > -1:									
-				cropped_image = recrop_image.crop((0, cropping_height_120x600, recrop_image.width, recrop_image.height))							
-			elif self.working_dir_short_name.find("336x280") > -1:									
-				cropped_image = recrop_image.crop((0, cropping_height_336x280, recrop_image.width, recrop_image.height))							
+			elif self.working_dir_short_name.find("300x250") > -1:
+				cropped_image = recrop_image.crop((0, cropping_height_300x250, recrop_image.width, recrop_image.height))
+			elif self.working_dir_short_name.find("160x600") > -1:
+				cropped_image = recrop_image.crop((0, cropping_height_160x600, recrop_image.width, recrop_image.height))
+			elif self.working_dir_short_name.find("300x600") > -1:
+				cropped_image = recrop_image.crop((0, cropping_height_300x600, recrop_image.width, recrop_image.height))
+			elif self.working_dir_short_name.find("480x320") > -1:
+				cropped_image = recrop_image.crop((0, cropping_height_480x320, recrop_image.width, recrop_image.height))
+			elif self.working_dir_short_name.find("640x480") > -1:
+				cropped_image = recrop_image.crop((0, cropping_height_640x480, recrop_image.width, recrop_image.height))
+			elif self.working_dir_short_name.find("120x600") > -1:
+				cropped_image = recrop_image.crop((0, cropping_height_120x600, recrop_image.width, recrop_image.height))
+			elif self.working_dir_short_name.find("336x280") > -1:
+				cropped_image = recrop_image.crop((0, cropping_height_336x280, recrop_image.width, recrop_image.height))
 
 		return cropped_image
 
 	def print_sprite_complete(self, p_name):
-		print("\nThe sprite " + _text_colors.KNOCKOUT + p_name + _text_colors.ENDC + " has been created.")	
+		print("\nThe sprite " + _text_colors.KNOCKOUT + p_name + _text_colors.ENDC + " has been created.")
 
 	def open_folder(self, p_dir):
 		if sys.platform == 'darwin':
@@ -298,10 +299,10 @@ for dir_name in dirs:
 			f.main()
 		except Exception as e:
 			print("¯\\_( :-/ )_/¯  Whooops!")
-			raise e 
+			raise e
 
 
 
 
 
-	  
+

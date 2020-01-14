@@ -1,12 +1,5 @@
-#!/usr/bin/env python
-# -*- coding: utf8 -*-
-
-__author__ = "Arlo Emerson <arloemerson@gmail.com>"
-__version__ = "2"
-__date__ = "1/3/2020"
-
 """
-	SCRIPT: 
+	SCRIPT:
 	png_sprite_maker.py
 
 	SYNOPSIS:
@@ -30,10 +23,16 @@ __date__ = "1/3/2020"
     You should have received a copy of the GNU Lesser General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
+
+__author__ = "Arlo Emerson <arloemerson@gmail.com>"
+__version__ = "2.1"
+__date__ = "1/14/2020"
+
 from PIL import Image
-import TextColors as _text_colors
+import text_colors as _text_colors
 
 def make_sprite(p_file_names,p_frame_count,p_image_width,p_image_height):
+	"""Typically called by upstream process, make_sprites_from_sequences.py"""
 
 	image_dimensions = ((p_frame_count*p_image_width),p_image_height)
 	tmp_transparency_mask = Image.new('RGBA', (p_image_width, p_image_height), (255, 255, 255) )
@@ -57,11 +56,11 @@ def make_sprite(p_file_names,p_frame_count,p_image_width,p_image_height):
 
 		except Exception as e:
 			print(e)
-		else: 
+		else:
 			pass
 
 		x_position = (p_image_width * i)
-		
+
 		# There's an intermittant bug with the mask....
 		# It actually might have to do with more than one sized PNG sneaking into the collection.
 		# anyway, sometimes that line fails so a temp workaround is presented:
@@ -71,7 +70,7 @@ def make_sprite(p_file_names,p_frame_count,p_image_width,p_image_height):
 			new_image.paste(img, (x_position, 0))
 			print_transparency_mask_error()
 			return None
-		
+
 	return new_image
 
 def print_transparency_mask_error():
@@ -83,7 +82,7 @@ def make_vertical_sprite(p_file_names,p_frame_count,p_image_width,p_image_height
 
 	image_dimensions = (p_image_width,(p_frame_count*p_image_height))
 
-	# test area, trying to use this for all 
+	# test area, trying to use this for all
 	tmp_transparency_mask = Image.new('RGBA', (p_image_width, p_image_height), (255, 255, 255) )
 	new_image = Image.new('RGBA', (image_dimensions[0], image_dimensions[1]) )
 
@@ -108,12 +107,12 @@ def make_vertical_sprite(p_file_names,p_frame_count,p_image_width,p_image_height
 
 		except Exception as e:
 			print(e)
-		else: 
+		else:
 			pass
 
-		y_position = (p_image_height * i)		
-		# new_image.paste(img, (0, y_position))		
-		
+		y_position = (p_image_height * i)
+		# new_image.paste(img, (0, y_position))
+
 		# there's an intermittant bug with the mask.
 		# it actually might have to do with more than one sized PNG sneaking into the collection.
 		# anyway, sometimes that line fails so a temp workaround is presented:
@@ -152,10 +151,10 @@ def make_jpg_sprite(p_file_names,p_frame_count,p_image_width,p_image_height):
 
 		except Exception as e:
 			print(e)
-		else: 
+		else:
 			pass
 
-		x_position = (p_image_width * i)		
-		new_image.paste(img, (x_position, 0))		
-		
+		x_position = (p_image_width * i)
+		new_image.paste(img, (x_position, 0))
+
 	return new_image
