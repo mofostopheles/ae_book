@@ -18,6 +18,6 @@ BOLD = '\033[1m'
 HEADERLEFT = FAIL + "░" + FAIL + "▒" + FAIL + "▓" + FAIL + "█"
 HEADERLEFT2 = CYAN + "░" + CYAN + "▒" + CYAN + "▓" + CYAN + "█"
 HEADERLEFT3 = WARNING + "░" + WARNING + "▒" + WARNING + "▓" + WARNING + "█"
-
+ERROR_EMOJI = "¯\\_( :-/)_/¯  Whooops!"
 def print_logo():
     print(" ")

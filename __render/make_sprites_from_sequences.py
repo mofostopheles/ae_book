@@ -1,9 +1,12 @@
 # -*- coding: utf8 -*-
 '''
 	USAGE
-	• Place this script and the lib folder at the sibling level of the PNG folders you want to convert e.g. in your render/output folder.
-	• Nothing to set, you just run the script. If there are directories containing PNGs, a sprite will be constructed for each unique set.
-	• Directories with names like "misc" or "processed" or "boneyard", etc, will be ignored. All other directories are globbed for *.png files.
+	• Place this script and the lib folder at the sibling level of the PNG folders
+		you want to convert e.g. in your render/output folder.
+	• Nothing to set, you just run the script. If there are directories containing
+		PNGs, a sprite will be constructed for each unique set.
+	• Directories with names like "misc" or "processed" or "boneyard", etc, will
+		be ignored. All other directories are globbed for *.png files.
 
 	LICENSE
 	This program is free software: you can redistribute it and/or modify
@@ -19,7 +22,12 @@
 	You should have received a copy of the GNU Lesser General Public License
 	along with this program.  If not, see <https://www.gnu.org/licenses/>.
 '''
-import os, sys, glob, subprocess, argparse, textwrap
+import os
+import sys
+import glob
+import subprocess
+import argparse
+import textwrap
 from PIL import Image
 import lib.png_sprite_maker as _sprite_maker
 import lib.text_colors as _text_colors
@@ -30,8 +38,9 @@ __date__ = "1/14/2020"
 
 class MakeSpritesFromSequences():
 	"""
-	This script makes a 1 row horizontal sprite from PNGs that are already organized into directories.
-	Typically these would have been exported from After Effects using a PNG Sequence render output module.
+	This script makes a 1 row horizontal sprite from PNGs that are already
+	organized into directories. Typically these would have been exported from
+	After Effects using a PNG Sequence render output module.
 	"""
 	def __init__(self):
 		print("Running " + _text_colors.HEADERLEFT2 + _text_colors.INVERTED + self.__class__.__name__ + " " + _text_colors.ENDC)
@@ -50,7 +59,7 @@ class MakeSpritesFromSequences():
 		self.extent = 600
 		self.crop = False
 		self.line = "-----------------------------"
-		self.SPRITE_PREFIX = "sprite-"
+		self.sprite_prefix = "sprite-"
 
 		self.setup_parser()
 
@@ -59,7 +68,8 @@ class MakeSpritesFromSequences():
 		parser = argparse.ArgumentParser( \
 			description='This script makes a 1 row horizontal sprite from ' + \
 			_text_colors.WARNING + 'PNGs that are already organized into directories. ' + \
-			_text_colors.ENDC + '\nTypically these would have been exported from After Effects\nusing the built-in PNG Sequence render output module.', \
+			_text_colors.ENDC + '\nTypically these would have been exported from After' + \
+			'Effects\nusing the built-in PNG Sequence render output module.', \
 			epilog=textwrap.dedent('''Setup: ''' + \
 	'''
 	• Place this script and the lib folder at the sibling level of the\n''' + \
@@ -155,23 +165,23 @@ class MakeSpritesFromSequences():
 			print(_text_colors.WARNING + "Found nothing to convert in " + _text_colors.ENDC + _text_colors.CYAN + self.working_dir + _text_colors.ENDC)
 			return
 
-		numberOfFrames = len(files) # this equates to number of frames in the sprite
-		self.local_print(_text_colors.WHITE + "Number of frames: " + _text_colors.ENDC + _text_colors.CYAN + str(numberOfFrames) + _text_colors.ENDC)
+		number_of_frames = len(files) # this equates to number of frames in the sprite
+		self.local_print(_text_colors.WHITE + "Number of frames: " + _text_colors.ENDC + _text_colors.CYAN + str(number_of_frames) + _text_colors.ENDC)
 		tmp_image = Image.open(files[0])
 
 		if self.vertical:
-			processedSprite = _sprite_maker.make_vertical_sprite(files, numberOfFrames, tmp_image.size[0], tmp_image.size[1])
+			processed_sprite = _sprite_maker.make_vertical_sprite(files, number_of_frames, tmp_image.size[0], tmp_image.size[1])
 		else:
-			processedSprite = _sprite_maker.make_sprite(files, numberOfFrames, tmp_image.size[0], tmp_image.size[1])
+			processed_sprite = _sprite_maker.make_sprite(files, number_of_frames, tmp_image.size[0], tmp_image.size[1])
 
-		strFileName = self.SPRITE_PREFIX + self.working_dir_short_name + ".png"
+		file_name = self.sprite_prefix + self.working_dir_short_name + ".png"
 
 		if self.output_type == "png":
-			if processedSprite:
-				processedSprite.save(strFileName)
-				self.print_sprite_complete(strFileName)
+			if processed_sprite:
+				processed_sprite.save(file_name)
+				self.print_sprite_complete(file_name)
 			else:
-				print(_text_colors.FAIL + "Failed to make sprite " +  _text_colors.ENDC + _text_colors.WHITE + strFileName + _text_colors.ENDC)
+				print(_text_colors.FAIL + "Failed to make sprite " +  _text_colors.ENDC + _text_colors.WHITE + file_name + _text_colors.ENDC)
 		else:
 			if self.qset:
 				qset = self.qset_list # 100 disables portions of the JPEG compression algorithm, and results in large files with hardly any gain in image quality.
@@ -180,38 +190,38 @@ class MakeSpritesFromSequences():
 				qset = [self.quality]
 				self.local_print(_text_colors.WHITE + "Using JPG quality of "  + _text_colors.ENDC + _text_colors.CYAN + str(self.quality) + _text_colors.ENDC)
 
-			for q in qset:
+			for quality_value in qset:
 
 				if self.crop: # crop the sprite according to the crop specs
-					processedSprite = self.crop_image(processedSprite)
+					processed_sprite = self.crop_image(processed_sprite)
 
 				# if there is an alpha channel this will remove it
-				dealphaImage = processedSprite.convert("RGB")
+				dealpha_image = processed_sprite.convert("RGB")
 
 				if self.encoder == "pillow":
-					# strFileName = self.SPRITE_PREFIX + self.working_dir_short_name + "-q" + str(q) + ".jpg"
-					strFileName = self.SPRITE_PREFIX + self.working_dir_short_name + ".jpg"
-					fullFilePath = strFileName
-					self.local_print(_text_colors.WHITE + "Quality set to " + str(q) + _text_colors.ENDC)
-					dealphaImage.save(fullFilePath, format='JPEG', subsampling=0, quality=int(q), optimize=True, progressive=True)
-					self.print_sprite_complete(fullFilePath)
+					# file_name = self.sprite_prefix + self.working_dir_short_name + "-quality_value" + str(quality_value) + ".jpg"
+					file_name = self.sprite_prefix + self.working_dir_short_name + ".jpg"
+					full_file_path = file_name
+					self.local_print(_text_colors.WHITE + "Quality set to " + str(quality_value) + _text_colors.ENDC)
+					dealpha_image.save(full_file_path, format='JPEG', subsampling=0, quality=int(quality_value), optimize=True, progressive=True)
+					self.print_sprite_complete(full_file_path)
 
 				elif self.encoder == "magic" or self.encoder == "imagemagic":
 					try:
-						strFileName = self.SPRITE_PREFIX + self.working_dir_short_name + ".jpg"
-						fullFilePath = strFileName
+						file_name = self.sprite_prefix + self.working_dir_short_name + ".jpg"
+						full_file_path = file_name
 
-						processedSprite.save(fullFilePath + ".png") # this is really a temp file
+						processed_sprite.save(full_file_path + ".png") # this is really a temp file
 						self.local_print(_text_colors.WHITE + "Converting with " + _text_colors.ENDC + _text_colors.CYAN + str(self.extent) + _text_colors.ENDC + _text_colors.WHITE + " KB extent" + _text_colors.ENDC)
-						arg = "convert " + fullFilePath + ".png -define jpeg:extent=" + str(self.extent) + "kb " + fullFilePath
+						arg = "convert " + full_file_path + ".png -define jpeg:extent=" + str(self.extent) + "kb " + full_file_path
 						self.local_print(_text_colors.DARKGREEN + arg + _text_colors.ENDC)
 						os.system(arg)
-						os.system("rm " + fullFilePath + ".png") # remove the temp file
+						os.system("rm " + full_file_path + ".png") # remove the temp file
 						self.local_print(_text_colors.WHITE + "Removed a temp PNG file." + _text_colors.ENDC)
-						self.print_sprite_complete(fullFilePath)
-					except Exception as e:
+						self.print_sprite_complete(full_file_path)
+					except Exception as exception:
 						print("If you're seeing this error, make sure you are passing in -e magic on the command line. Does not work from within SUBLIME.")
-						raise e
+						raise exception
 
 	def crop_image(self, image_to_crop):
 		'''Crop an image based on name/size.'''
@@ -299,6 +309,6 @@ for dir_name in DIRS:
 		WORKER.working_dir = dir_name + "/"
 		try:
 			WORKER.main() # call main on WORKER
-		except Exception as e:
-			print("¯\\_(:-/)_/¯  Whooops!")
-			raise e
+		except Exception as exception:
+			print(_text_colors.ERROR_EMOJI)
+			raise exception
