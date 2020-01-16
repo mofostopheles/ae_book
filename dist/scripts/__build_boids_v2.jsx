@@ -157,12 +157,12 @@ var buildBoids = function() {
                         avoidance = "for(var n = 0; n < layersCollection.length; n++){" + NEW_LINE +
                                         "    if (thisLayer !== layersCollection[n]){" + NEW_LINE +
                                         "        var delta = sub(thisLayer.position, layersCollection[n].position);" + NEW_LINE +
-                                        "        if ((delta[0] < 100) || (delta[1] < 100)) {" + NEW_LINE +
+                                        "        if ((delta[0] > 0 && delta[0] < 5) && (delta[1] > 0 && delta[1] < 5)) {" + NEW_LINE +
                                         "            smoothPosition = [smoothPosition[0]" + plusMinus + avoidAmount + ",smoothPosition[1]" + plusMinus +  avoidAmount + "];" + NEW_LINE +
                                         "        }" + NEW_LINE +
                                         "    }" + NEW_LINE +
                                         "}" + NEW_LINE +
-                                        "smoothPosition = smoothPosition/samples;" + NEW_LINE;
+                                        "smoothPosition;" + NEW_LINE;
                     // } else {
                     //     avoidance = "";
                     // }
@@ -171,8 +171,9 @@ var buildBoids = function() {
                     var es = selectedComp.layers[m].position.expression;
                     es = layersCol + es + NEW_LINE;
                     if ((selectedComp.layers[m].name !== "boid_pointer") &&
-                        (selectedComp.layers[m].name !== "boid_leader"))
+                        (selectedComp.layers[m].name !== "boid_leader")){
                         selectedComp.layers[m].position.expression = es + avoidance;
+                    }
                 }
             }
             aalert(taskCount + ' layers were created.');
