@@ -58,14 +58,13 @@ var buildBoids = function() {
                     timeFrame = (randRange(1, 9) / timeFrameTransform).toString() + ";";
                     smoothPosition = (j + 1).toString() + ";";
 
-            
-
                     var boidExpression = "var samples = " + samples + NEW_LINE +
                         "var timeframe = " + timeFrame + NEW_LINE +
                         "var delay = " + delay + NEW_LINE +
                         "var smoothPosition = " + smoothPosition + NEW_LINE +
                         "for(var n = 0; n < samples; n++){" + NEW_LINE +
-                        "smoothPosition += thisComp.layer('boid_leader').transform.position.valueAtTime(time-delay-timeframe/2+timeframe/samples*n)}" + NEW_LINE +
+                        "\tsmoothPosition += thisComp.layer('boid_leader').transform.position.valueAtTime(time - delay - timeframe / 2 + timeframe / samples * n);" + NEW_LINE +
+                        "}" + NEW_LINE +
                         "smoothPosition = smoothPosition/samples";
 
                     var rotExpression = "thisPoint=position;" + NEW_LINE +
@@ -95,7 +94,6 @@ var buildBoids = function() {
 
                     newBoidLayer.rotation.expression = rotExpression;
                     newBoidLayer.position.expression = boidExpression;
-                    
 
                     taskCount++;
                 }
@@ -125,13 +123,56 @@ var buildBoids = function() {
                         "var delay = " + delay + NEW_LINE +
                         "var smoothPosition = " + smoothPosition + NEW_LINE +
                         "for(var n = 0; n < samples; n++){" + NEW_LINE +
-                        "smoothPosition += thisComp.layer('boid_leader').transform.position.valueAtTime(time-delay-timeframe/2+timeframe/samples*n)}" + NEW_LINE +
+                        "\t" + "smoothPosition += thisComp.layer('boid_leader').transform.position.valueAtTime(time - delay - timeframe / 2 + timeframe/samples * n);" + NEW_LINE + 
+                        "}" + NEW_LINE +
                         "smoothPosition = smoothPosition/samples";
 
                     newBoidDotLayer.rotation.expression = rotExpression;
                     newBoidDotLayer.position.expression = boidDotExpression;
 
                     taskCount++;
+                }
+
+                // Generate javascript array representing a comp's layers positions.
+                var layersCol = "var layersCollection = [";
+                for (var m = 1; m < selectedComp.layers.length; m++) {
+                    layersCol += "thisComp.layer('"+ selectedComp.layers[m].name +"'), " + NEW_LINE;  
+                }
+                layersCol += "];" + NEW_LINE;
+                
+                var plusMinus = "-";
+                var avoidance = "";
+                for (var m = 1; m < selectedComp.layers.length; m++) {
+                
+                    if (m%2==0){
+                        plusMinus = "+";
+                    } else {
+                        plusMinus = "-";
+                    }
+
+                    var avoidAmount = 1 + m;
+                    avoidAmount = 0.1;
+
+                    if (selectedComp.layers[m].name.indexOf("yellow")>0) {
+                        avoidance = "for(var n = 0; n < layersCollection.length; n++){" + NEW_LINE +
+                                        "    if (thisLayer !== layersCollection[n]){" + NEW_LINE +
+                                        "        var delta = sub(thisLayer.position, layersCollection[n].position);" + NEW_LINE +
+                                        "        if ((delta[0] < 5) || (delta[1] < 5)) {" + NEW_LINE +
+                                        "            smoothPosition = [smoothPosition[0]" + plusMinus + avoidAmount + ",smoothPosition[1]" + plusMinus +  avoidAmount + "];" + NEW_LINE +
+                                        "        }" + NEW_LINE +
+                                        "    }" + NEW_LINE +
+                                        "}" + NEW_LINE +
+                                        "smoothPosition = smoothPosition/samples;" + NEW_LINE;
+                    } else {
+                        avoidance = "";
+                    }
+
+
+                    var es = selectedComp.layers[m].position.expression;
+                    es = layersCol + es + NEW_LINE;
+                    if ((selectedComp.layers[m].name !== "boid_pointer") &&
+                        (selectedComp.layers[m].name !== "boid_leader"))
+                        selectedComp.layers[m].position.expression = es + avoidance;
                 }
             }
             aalert(taskCount + ' layers were created.');
