@@ -68,6 +68,14 @@ var getSelectedComps = function() {
 };
 
 /**
+ * Returns a random number between two ranges.
+ */
+function randRange(min, max){ 
+    var random = Math.random() * (+max - +min) + +min;
+    return random;
+}
+
+/**
  * Returns an array of objects, one for each keyframe.
  */
 function getKeyframesFromProperty(layer, layerProp, keysLength) {
