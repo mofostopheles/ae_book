@@ -130,7 +130,6 @@ var buildBoids = function() {
                     taskCount++;
                 }
 
-
                 var plusMinus = "-";
                 var avoidance = "";
                 for (var m = 1; m < selectedComp.layers.length; m++) {
@@ -143,7 +142,9 @@ var buildBoids = function() {
                     avoidAmount += 1;
                     avoidance = "for(var n = 1; n <= thisComp.numLayers; n++){" + NEW_LINE +
                         "    if ((thisLayer !== thisComp.layer(n)) && " + NEW_LINE +
-                        "    (thisComp.layer(n).name.indexOf('boid_chaser') == -1)){" + NEW_LINE +
+                        "    (thisComp.layer(n).name.indexOf('winged') == -1) && " + NEW_LINE +
+                        "    (thisComp.layer(n).name.indexOf('dot') == -1) && " + NEW_LINE +
+                        "    (thisComp.layer(n).name.indexOf('pointer') == -1)){" + NEW_LINE +
                         "        var delta = sub(thisLayer.position, thisComp.layer(n).position);" + NEW_LINE +
                         "        if ((delta[0] < " + avoidanceThreshold.toString() + ") || (delta[1] < " + avoidanceThreshold + ")) {" + NEW_LINE +
                         "            smoothPosition = [smoothPosition[0]" + plusMinus + avoidAmount.toString() + ",smoothPosition[1]" + plusMinus + avoidAmount.toString() + "];" + NEW_LINE +
@@ -160,7 +161,7 @@ var buildBoids = function() {
                 }
 
                 for (var k = 0; k < numberOfChasers; k++) {
-                    var boidChaserComp = getComp("boid_chaser");
+                    var boidChaserComp = getComp("winged_boid");
                     var boidChaserExpression = "var samples = 5;" + NEW_LINE +
                         "var timeFrame = .1" + k.toString() + ";" + NEW_LINE +
                         "var delay = 0." + (k + 1).toString() + k.toString() + ";" + NEW_LINE +
@@ -170,7 +171,7 @@ var buildBoids = function() {
                         "smoothPosition = smoothPosition/samples;";
 
                     var newBoidChaserLayer = selectedComp.layers.add(boidChaserComp);
-                    newBoidChaserLayer.name = "boid_chaser_" + k.toString();
+                    newBoidChaserLayer.name = "winged_boid_" + k.toString();
 
                     newBoidChaserLayer.rotation.expression = rotExpression  + "- 90;";
                     newBoidChaserLayer.position.expression = boidChaserExpression;
@@ -194,8 +195,6 @@ var buildBoids = function() {
                     newBoidChaserLayer.position.expression = boidChaserExpression;
                     taskCount++;
                 }
-
-
             }
             aalert(taskCount + ' layers were created.');
         }
@@ -209,8 +208,8 @@ var vars = {
     numberOfBoids: 7,
     numberOfBoidDots: 5,
     numberOfChasers: 5,
-    avoidanceThreshold: 80,
-    avoidAmount: 2
+    avoidanceThreshold: 120,
+    avoidAmount: 5
 };
 
 /**

@@ -58,7 +58,6 @@ class MakeSpritesFromSequences():
 		self.encoder = "pillow"
 		self.extent = 600
 		self.crop = False
-		self.line = "-----------------------------"
 		self.sprite_prefix = "sprite-"
 
 		self.setup_parser()
@@ -154,11 +153,12 @@ class MakeSpritesFromSequences():
 			if self.output_type != "png":
 				print("qset ommited, will use JPG 70 quality.")
 
-		print(self.line)
+		print(_text_colors.DASH_LINE)
 
 	def main(self):
 		'''Main method of class.'''
-		print(self.line)
+		
+		print(_text_colors.DASH_LINE)
 		files = sorted(glob.glob(str(self.working_dir)  + '*.png'))
 
 		if len(files) == 0:

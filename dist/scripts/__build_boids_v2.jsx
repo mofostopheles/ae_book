@@ -31,7 +31,6 @@ app.beginUndoGroup('work_undo');
  */
 var buildBoids = function() {
     return {
-
         arrSelectedComps: getSelectedComps(),
         main: function(argument) {
             var selectedComp;
@@ -44,12 +43,14 @@ var buildBoids = function() {
             var delay = "0."
             var smoothPosition = "index + 1;";
             var timeFrameTransform = 9.1;
+            var avoidAmount = argument.avoidAmount;
+            var avoidanceThreshold = argument.avoidanceThreshold;
+            var numberOfChasers = argument.numberOfChasers;
 
             for (var i = 0; i < this.arrSelectedComps.length; i++) {
                 selectedComp = this.arrSelectedComps[i];
 
                 for (var j = 0; j < numberOfBoids; j++) {
-
                     var boidComp = getComp("boid");
                     var boidDotComp = getComp("boid_dot");
                     var boidPlusComp = getComp("boid_plus");
@@ -71,10 +72,9 @@ var buildBoids = function() {
                         "thatPoint = thisComp.layer('boid_leader').position;" + NEW_LINE +
                         "delta=sub(thisPoint, thatPoint);" + NEW_LINE +
                         "angle=Math.atan2(delta[1], delta[0]);" + NEW_LINE +
-                        "radiansToDegrees(angle);";
+                        "radiansToDegrees(angle)";
 
                     var newBoidLayer = selectedComp.layers.add(boidComp);
-
 
                     // Make one of the followers red
                     if (j === 3) {
@@ -83,7 +83,7 @@ var buildBoids = function() {
                         newBoidLayer.effect("Change to Color")("Change").setValue(4);
                         newBoidLayer.name = "boid_follower_red_" + j.toString();
                     } else if (j === 2) {
-                        timeFrame = "2;";
+                        //timeFrame = "2;";
                         newBoidLayer.property("Effects").addProperty("Change to Color");
                         newBoidLayer.effect("Change to Color")("To").setValue([255, 255, 0]);
                         newBoidLayer.effect("Change to Color")("Change").setValue(4);
@@ -94,19 +94,17 @@ var buildBoids = function() {
 
                     newBoidLayer.rotation.expression = rotExpression;
                     newBoidLayer.position.expression = boidExpression;
-
                     taskCount++;
                 }
 
                 for (var k = 0; k < numberOfBoidDots; k++) {
-
                     var boidComp = getComp("boid");
                     var boidDotComp = getComp("boid_dot");
                     var boidPlusComp = getComp("boid_plus");
 
-                    delay = "0." + (k + 1).toString() + ";";
+                    delay = "0.0" + (k + 1).toString() + ";";
                     boidDotTimeFrame = (randRange(1, 20) / timeFrameTransform).toString() + ";";
-                    smoothPosition = (k + 1).toString() + ";";
+                    smoothPosition = "0." + (k + 1).toString() + ";";
 
                     var newBoidDotLayer;
                     if (k === 4) {
@@ -129,51 +127,32 @@ var buildBoids = function() {
 
                     newBoidDotLayer.rotation.expression = rotExpression;
                     newBoidDotLayer.position.expression = boidDotExpression;
-
                     taskCount++;
                 }
 
-                // Generate javascript array representing a comp's layers positions.
-                var layersCol = "var layersCollection = [";
-                for (var m = 1; m < selectedComp.layers.length; m++) {
-                    layersCol += "thisComp.layer('"+ selectedComp.layers[m].name +"'), " + NEW_LINE;
-                }
-                layersCol += "];" + NEW_LINE;
-
                 var plusMinus = "-";
-                var avoidance = "";
                 for (var m = 1; m < selectedComp.layers.length; m++) {
-
-                    if (m%2==0){
+                    if (m % 2 == 0) {
                         plusMinus = "+";
                     } else {
                         plusMinus = "-";
                     }
-
-                    var avoidAmount = 10 + m;
-                    // avoidAmount = 0.1;
-
-                    // if (selectedComp.layers[m].name.indexOf("yellow")>0) {
-                        avoidance = "for(var n = 0; n < layersCollection.length; n++){" + NEW_LINE +
-                                        "    if (thisLayer !== layersCollection[n]){" + NEW_LINE +
-                                        "        var delta = sub(thisLayer.position, layersCollection[n].position);" + NEW_LINE +
-                                        "        if ((delta[0] > 0 && delta[0] < 5) && (delta[1] > 0 && delta[1] < 5)) {" + NEW_LINE +
-                                        "            smoothPosition = [smoothPosition[0]" + plusMinus + avoidAmount + ",smoothPosition[1]" + plusMinus +  avoidAmount + "];" + NEW_LINE +
-                                        "        }" + NEW_LINE +
-                                        "    }" + NEW_LINE +
-                                        "}" + NEW_LINE +
-                                        "smoothPosition;" + NEW_LINE;
-                    // } else {
-                    //     avoidance = "";
-                    // }
-
+                    avoidance = "for(var n = 1; n <= thisComp.numLayers; n++){" + NEW_LINE +
+                        "    if ((thisLayer.name !== thisComp.layer(n).name) && " + NEW_LINE +
+                        "    (thisComp.layer(n).name.indexOf('pointer') == -1)){" + NEW_LINE +
+                        "        var delta = sub(thisLayer.position, thisComp.layer(n).position);" + NEW_LINE +
+                        "        if ((delta[0] < " + avoidanceThreshold.toString() + ") || (delta[1] < " + avoidanceThreshold + ")) {" + NEW_LINE +
+                        "            smoothPosition = [smoothPosition[0]" + plusMinus + avoidAmount.toString() + ",smoothPosition[1]" + plusMinus + avoidAmount.toString() + "];" + NEW_LINE +
+                        "        }" + NEW_LINE +
+                        "    }" + NEW_LINE +
+                        "}" + NEW_LINE +
+                        "smoothPosition;";
 
                     var es = selectedComp.layers[m].position.expression;
-                    es = layersCol + es + NEW_LINE;
+                    es += NEW_LINE;
                     if ((selectedComp.layers[m].name !== "boid_pointer") &&
-                        (selectedComp.layers[m].name !== "boid_leader")){
+                        (selectedComp.layers[m].name !== "boid_leader"))
                         selectedComp.layers[m].position.expression = es + avoidance;
-                    }
                 }
             }
             aalert(taskCount + ' layers were created.');
@@ -186,7 +165,10 @@ var buildBoids = function() {
  */
 var vars = {
     numberOfBoids: 7,
-    numberOfBoidDots: 8
+    numberOfBoidDots: 5,
+    numberOfChasers: 0,
+    avoidanceThreshold: 20,
+    avoidAmount: 10
 };
 
 /**

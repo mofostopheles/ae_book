@@ -3,7 +3,7 @@
 	Utility module for making sprites.
 
 	USAGE
-	• Called by make_sprites_from_sequences.py
+	• Called by make_sprites_from_sequences.py and make_sprites_from_frames.py
 
 	LICENSE
 		This program is free software: you can redistribute it and/or modify
@@ -49,9 +49,6 @@ def make_sprite(file_names, frame_count, image_width, image_height):
 
 		x_position = (image_width * i)
 
-		# There's an intermittant bug with the mask....
-		# It actually might have to do with more than one sized PNG sneaking into the collection.
-		# anyway, sometimes that line fails so a temp workaround is presented:
 		try:
 			new_image.paste(tmp_image, (x_position, 0), tmp_transparency_mask)
 		except ValueError:
@@ -64,6 +61,7 @@ def make_sprite(file_names, frame_count, image_width, image_height):
 def print_transparency_mask_error():
 	"""Error will get thrown when pasting PNGs of varying sizes, basically
 	the transparency mask doesn't match up."""
+
 	print(_text_colors.ERROR_EMOJI)
 	print(_text_colors.FAIL +	"Error pasting the transparency mask.\n" + _text_colors.ENDC + \
 				"This is usually caused when the source PNGs are not the same size.\n" + \
@@ -72,13 +70,10 @@ def print_transparency_mask_error():
 
 def make_vertical_sprite(file_names, frame_count, image_width, image_height):
 	"""Same logic as elsewhere, just build the sprite along the y axis."""
-	image_dimensions = (image_width, (frame_count * image_height))
 
-	# test area, trying to use this for all
+	image_dimensions = (image_width, (frame_count * image_height))
 	tmp_transparency_mask = Image.new('RGBA', (image_width, image_height), (255, 255, 255))
 	new_image = Image.new('RGBA', (image_dimensions[0], image_dimensions[1]))
-
-	# new_image = Image.new('RGB', (image_dimensions[0], image_dimensions[1]))
 	y_position = 0
 	tmp_counter = 0
 
@@ -95,11 +90,7 @@ def make_vertical_sprite(file_names, frame_count, image_width, image_height):
 			pass
 
 		y_position = (image_height * i)
-		# new_image.paste(tmp_image, (0, y_position))
 
-		# there's an intermittant bug with the mask.
-		# it actually might have to do with more than one sized PNG sneaking into the collection.
-		# anyway, sometimes that line fails so a temp workaround is presented:
 		try:
 			new_image.paste(tmp_image, (0, y_position), tmp_transparency_mask)
 		except ValueError:
@@ -113,7 +104,6 @@ def make_jpg_sprite(file_names, frame_count, image_width, image_height):
 	"""This is maintained for backwards compat with older scripts calling here."""
 
 	image_dimensions = ((frame_count * image_width), image_height)
-
 	new_image = Image.new('RGB', (image_dimensions[0], image_dimensions[1]))
 	x_position = 0
 	tmp_counter = 0
