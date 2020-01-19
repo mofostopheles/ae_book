@@ -38,15 +38,16 @@ var nameOfFunction = function() {
             var selectedComp;
             var taskCount = 0;
             queueWorkArea.frameNamePattern = argument.frameNamePattern;
+            queueWorkArea.outputModuleName = argument.outputModuleName;
 
             for (var k = this.arrSelectedComps.length - 1; k >= 0; k--) {
                 selectedComp = this.arrSelectedComps[k];
 
                 for (var i = 1; i <= selectedComp.numLayers; i++) {
-                    
+
                     // Select all the guide layers that are named as frame numbers.
                     if (selectedComp.layers[i].guideLayer == true) {
-                        
+
                         // The layer name must be a simple int.
                         if (isNaN(selectedComp.layers[i].name) == false) {
                             queueWorkArea(selectedComp, selectedComp.layers[i]);
@@ -65,6 +66,7 @@ var nameOfFunction = function() {
  */
 function queueWorkAreas(compToQueue, layer) {
     var frameNamePattern = arguments.callee.frameNamePattern;
+    var outputModuleName = arguments.callee.outputModuleName;
     var baseName = compToQueue.name;
     var renderIn = layer.inPoint;
     var renderOut = layer.outPoint;
@@ -75,11 +77,18 @@ function queueWorkAreas(compToQueue, layer) {
     var outputModuleFilePathLength = outputModuleFilePath.length;
     var outputModuleFileName = outputModuleFile.name.toString();
     var outputModuleFileNameLength = outputModuleFileName.length;
-    var outputModuleFileEnd = outputModuleFileName.slice((outputModuleFileNameLength - 4), outputModuleFileNameLength);
-    var outputModuleFileHead = outputModuleFilePath.slice(0, (outputModuleFilePathLength - outputModuleFileNameLength));
+    var outputModuleFileEnd =
+        outputModuleFileName.slice((outputModuleFileNameLength - 4), outputModuleFileNameLength);
+    var outputModuleFileHead =
+        outputModuleFilePath.slice(0, (outputModuleFilePathLength - outputModuleFileNameLength));
     renderQueueItem.timeSpanStart = renderIn;
     renderQueueItem.timeSpanDuration = (renderOut - renderIn);
     baseName = compToQueue.name.replace(frameNamePattern, layer.name);
+    try {
+        outputModule.applyTemplate(outputModuleName);
+    } catch (exception) {
+        // Pass. We don't care. Just let it go to default.
+    }
     outputModule.file = new File(outputModuleFileHead + baseName + outputModuleFileEnd);
 }
 
@@ -87,7 +96,8 @@ function queueWorkAreas(compToQueue, layer) {
  * Anything to be passed to the script's main method is set here.
  */
 var vars = {
-    frameNamePattern: '[frame]'
+    frameNamePattern: '[frame]',
+    outputModuleName: '_pngSequence'
 };
 
 /**
