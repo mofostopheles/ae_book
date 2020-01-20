@@ -68,10 +68,10 @@ var buildBoids = function() {
                         "}" + NEW_LINE +
                         "smoothPosition = smoothPosition/samples";
 
-                    var rotExpression = "thisPoint=position;" + NEW_LINE +
+                    var rotExpression = "thisPoint = position;" + NEW_LINE +
                         "thatPoint = thisComp.layer('boid_leader').position;" + NEW_LINE +
-                        "delta=sub(thisPoint, thatPoint);" + NEW_LINE +
-                        "angle=Math.atan2(delta[1], delta[0]);" + NEW_LINE +
+                        "delta = sub(thisPoint, thatPoint);" + NEW_LINE +
+                        "angle = Math.atan2(delta[1], delta[0]);" + NEW_LINE +
                         "radiansToDegrees(angle)";
 
                     var newBoidLayer = selectedComp.layers.add(boidComp);
@@ -121,7 +121,7 @@ var buildBoids = function() {
                         "var delay = " + delay + NEW_LINE +
                         "var smoothPosition = " + smoothPosition + NEW_LINE +
                         "for(var n = 0; n < samples; n++){" + NEW_LINE +
-                        "\t" + "smoothPosition += thisComp.layer('boid_leader').transform.position.valueAtTime(time - delay - timeframe / 2 + timeframe/samples * n);" + NEW_LINE +
+                        "\t" + "smoothPosition += thisComp.layer('boid_leader').transform.position.valueAtTime(time - delay - timeframe / 2 + timeframe / samples * n);" + NEW_LINE +
                         "}" + NEW_LINE +
                         "smoothPosition = smoothPosition/samples";
 
@@ -147,7 +147,7 @@ var buildBoids = function() {
                         "    (thisComp.layer(n).name.indexOf('pointer') == -1)){" + NEW_LINE +
                         "        var delta = sub(thisLayer.position, thisComp.layer(n).position);" + NEW_LINE +
                         "        if ((delta[0] < " + avoidanceThreshold.toString() + ") || (delta[1] < " + avoidanceThreshold + ")) {" + NEW_LINE +
-                        "            smoothPosition = [smoothPosition[0]" + plusMinus + avoidAmount.toString() + ",smoothPosition[1]" + plusMinus + avoidAmount.toString() + "];" + NEW_LINE +
+                        "            smoothPosition = [smoothPosition[0]" + plusMinus + avoidAmount.toString() + ", smoothPosition[1]" + plusMinus + avoidAmount.toString() + "];" + NEW_LINE +
                         "        }" + NEW_LINE +
                         "    }" + NEW_LINE +
                         "}" + NEW_LINE +
@@ -167,7 +167,7 @@ var buildBoids = function() {
                         "var delay = 0." + (k + 1).toString() + k.toString() + ";" + NEW_LINE +
                         "var smoothPosition = 0;" + NEW_LINE +
                         "for(var n = 0; n < samples; n++){" + NEW_LINE +
-                        "smoothPosition += thisComp.layer('boid_leader').transform.position.valueAtTime(time-delay-timeFrame/2+timeFrame/samples*n)};" + NEW_LINE +
+                        "smoothPosition += thisComp.layer('boid_leader').transform.position.valueAtTime(time - delay - timeFrame / 2 + timeFrame / samples * n)};" + NEW_LINE +
                         "smoothPosition = smoothPosition/samples;";
 
                     var newBoidChaserLayer = selectedComp.layers.add(boidChaserComp);
@@ -178,23 +178,23 @@ var buildBoids = function() {
                     taskCount++;
                 }
 
+                // TODO: wrap this with an on/off parameter
+                // for (var k = 1; k <= numberOfBoidDots*3; k++) {
+                //     var boidChaserComp = getComp("boid_dot");
+                //     var boidChaserExpression = "var samples = 5;" + NEW_LINE +
+                //         "var timeFrame = .1;" + NEW_LINE +
+                //         "var delay = 0." + (k * 2).toString() + ";" + NEW_LINE +
+                //         "var smoothPosition = 0.5;" + NEW_LINE +
+                //         "for(var n = 0; n < samples; n++){" + NEW_LINE +
+                //         "smoothPosition += thisComp.layer('boid_leader').transform.position.valueAtTime(time-delay-timeFrame/2+timeFrame/samples*n)};" + NEW_LINE +
+                //         "smoothPosition = smoothPosition/samples;";
 
-                for (var k = 1; k <= numberOfBoidDots*3; k++) {
-                    var boidChaserComp = getComp("boid_dot");
-                    var boidChaserExpression = "var samples = 5;" + NEW_LINE +
-                        "var timeFrame = .1;" + NEW_LINE +
-                        "var delay = 0." + (k*2).toString() + ";" + NEW_LINE +
-                        "var smoothPosition = 0.5;" + NEW_LINE +
-                        "for(var n = 0; n < samples; n++){" + NEW_LINE +
-                        "smoothPosition += thisComp.layer('boid_leader').transform.position.valueAtTime(time-delay-timeFrame/2+timeFrame/samples*n)};" + NEW_LINE +
-                        "smoothPosition = smoothPosition/samples;";
+                //     var newBoidChaserLayer = selectedComp.layers.add(boidChaserComp);
+                //     newBoidChaserLayer.name = "boid_micro_dot_" + k.toString();
 
-                    var newBoidChaserLayer = selectedComp.layers.add(boidChaserComp);
-                    newBoidChaserLayer.name = "boid_micro_dot_" + k.toString();
-
-                    newBoidChaserLayer.position.expression = boidChaserExpression;
-                    taskCount++;
-                }
+                //     newBoidChaserLayer.position.expression = boidChaserExpression;
+                //     taskCount++;
+                // }
             }
             aalert(taskCount + ' layers were created.');
         }
@@ -206,9 +206,9 @@ var buildBoids = function() {
  */
 var vars = {
     numberOfBoids: 7,
-    numberOfBoidDots: 5,
-    numberOfChasers: 5,
-    avoidanceThreshold: 120,
+    numberOfBoidDots: 25,
+    numberOfChasers: 0,
+    avoidanceThreshold: 50,
     avoidAmount: 5
 };
 

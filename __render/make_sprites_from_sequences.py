@@ -22,6 +22,7 @@
 	You should have received a copy of the GNU Lesser General Public License
 	along with this program.  If not, see <https://www.gnu.org/licenses/>.
 '''
+
 import os
 import sys
 import glob
@@ -288,22 +289,21 @@ class MakeSpritesFromSequences():
 		elif sys.platform == 'win32':
 			subprocess.Popen(['explorer', p_dir.replace("/", "\\")])
 
-
 	def local_print(self, string_message):
 		'''Print to console if verbose.'''
 		if self.verbose:
 			print(string_message)
 
-# get our directories
-# assumes this script is running at sibling level to these folders
+# Get our directories.
+# Assumes this script is running at sibling level to these folders.
 DIRS = next(os.walk('.'))[1]
 
-# instantiate the class
+# Instantiate the class
 WORKER = MakeSpritesFromSequences()
 
 for dir_name in DIRS:
-	# important and basic check so we don't try to process the "processed" folder
-	# if you have other folder titles you'd like to avoid processing, add them here
+	# Important and basic check so we don't try to process the "processed" folder.
+	# Add other folder titles you'd like to avoid processing here.
 	if dir_name not in ('processed', 'misc', 'lib', 'boneyard', 'archive'):
 		WORKER.working_dir_short_name = dir_name
 		WORKER.working_dir = dir_name + "/"

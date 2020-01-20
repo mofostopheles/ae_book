@@ -1,41 +1,64 @@
-#!/usr/bin/env python
 # -*- coding: utf8 -*-
-
-__author__ = "Arlo Emerson <arloemerson@gmail.com>"
-__version__ = "1.2"
-__date__ = "5/23/2018"
-
-"""
-	SCRIPT: 
-	"make_sprites_from_frames.py"
-	SYNOPSIS:
-	This script makes a 1 row horizontal sprite from loose, unorganized PNGs that have been exported from After Effects using the "__render_tagged_layers_from_selected_comps.jsx" script. 
+'''
+	This script makes a 1 row horizontal sprite from loose,
+	unorganized PNGs that have been exported from After Effects
+	using the "__generate_sequences_from_frames.jsx" script. 
 	
-	In After Effects the comp would be named e.g. "home-mini-ao-loopable-coral-[frame]-300x600" where "[frame]" is dynamically replaced by however many guide layers with a hashtag-string name e.g. "#intro" (see any Home Mini project for examples). This hashtag-string convention replaces the older naming convention of simply numbering these guide layers, as titles make more sense when frames are reordered by dev.
+	In After Effects the comp would be named e.g. "home-mini-ao-loopable-coral-[frame]-300x600"
+	where "[frame]" is dynamically replaced by numbered guide layers. 
+	
 	USAGE:
 	• Place this script and the lib folder in your render/output folder.
-	• Nothing to set, you just run the script. If there are PNGs present, a sprite will be constructed for each unique set of PNGs (based on the filenames).
-	• A temp folder "__sprite_staging_area" will be created at this script's location to hold sorted PNGs. Organizing the PNGs into folders is something normally done by After Effects, however our hashtag-string script obliterates the inherant foldering mechanism, and the ability to make a directory is not exposed in a JSX script. 
+	• Nothing to set, you just run the script. If there are PNGs present, 
+	  a sprite will be constructed for each unique set of PNGs (based on the filenames).
+	• A temp folder "__sprite_staging_area" will be created at this script's location to hold sorted PNGs. 
+	  Organizing the PNGs into folders is something normally done by After Effects, 
+	  however our script obliterates the inherant foldering mechanism, 
+	  and the ability to make a directory is not exposed in a JSX script. 
 	• The temp folder "__sprite_staging_area" will be removed at the end of this script's execution.
 	• Use args -vert to create vertical sprites.
 	• Use -t jpg to set output type to JPG.
 	• Use -q to set JPG quality, default is 70
 	• Use -qset to export a range of qualities	
-	• To see all flags and arguments run $ python make_sprites_from_frames.py -h
+	• To see all flags and arguments run $ python3 MakeSpritesFromFrames.py -h
         
 	TROUBLESHOOTING:
-	• If you end up with wonky looking filenames for your sprites, make sure your render folder is clean, only containing PNGs you wish to convert. Stray PNGs can cause trouble. 
-"""
+	• If you end up with wonky looking filenames for your sprites, make sure your render folder is clean, 
+	  only containing PNGs you wish to convert. Stray PNGs can cause trouble. 
 
-import os, sys, glob, subprocess, shutil, argparse, textwrap
+	LICENSE
+	This program is free software: you can redistribute it and/or modify
+	it under the terms of the GNU Lesser General Public License as published by
+	the Free Software Foundation, either version 3 of the License, or
+	(at your option) any later version.
+
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU Lesser General Public License for more details.
+
+	You should have received a copy of the GNU Lesser General Public License
+	along with this program.  If not, see <https://www.gnu.org/licenses/>.
+'''
+__author__ = "Arlo Emerson <arloemerson@gmail.com>"
+__version__ = "1.2"
+__date__ = "5/23/2018"
+
+import os
+import sys
+import glob
+import subprocess
+import shutil
+import argparse
+import textwrap
 import lib.png_sprite_maker as _sprite_maker
 import lib.text_colors as _text_colors
 from lib.build_sprite_staging_dirs import BuildSpriteStagingDirs
 from datetime import datetime as dt
 from PIL import Image
 
-class make_sprites_from_frames():
-
+class MakeSpritesFromFrames():
+	'''Makes a 1 row sprite from PNGs.'''
 	def __init__(self):
 		print("Running " + _text_colors.HEADERLEFT3 + _text_colors.INVERTED + self.__class__.__name__ + " " + _text_colors.ENDC)
 		
@@ -53,15 +76,16 @@ class make_sprites_from_frames():
 		self.verbose = False
 		self.sprite_prefix = "sprite-"
 
-		help_message = 'This script makes a 1 row sprite from PNGs that' + _text_colors.WARNING + ' HAVE NOT ' + _text_colors.ENDC + 'been output into specific directories. Typically these would have been exported from After Effects as PNGs using ' + _text_colors.WHITE + '__generate_sequences_from_frames.jsx.' + _text_colors.ENDC
+		help_message = 'This script makes a 1 row sprite from PNGs that' + _text_colors.WARNING + ' HAVE NOT ' + _text_colors.ENDC + 'been output into specific directories. ' + \
+		'Typically these would have been exported from After Effects as PNGs using ' + _text_colors.WHITE + '__generate_sequences_from_frames.jsx.' + _text_colors.ENDC
 
 		parser = argparse.ArgumentParser(description=help_message, 
 			epilog=textwrap.dedent('''Setup:
-• Place this script and the lib folder at the sibling level of the PNG folders you want to convert e.g. in your render/output folder.
-• Nothing to set, you just run the script. If there are directories containing PNGs, a sprite will be constructed for each unique set.'''), formatter_class=argparse.RawTextHelpFormatter)
+		• Place this script and the lib folder at the sibling level of the PNG folders you want to convert e.g. in your render/output folder.
+		• Nothing to set, you just run the script. If there are directories containing PNGs, a sprite will be constructed for each unique set.'''), formatter_class=argparse.RawTextHelpFormatter)
 		parser.add_argument('-vert', '--vertical', dest='vertical', action='store_true', help="For making vertical sprites. Default is horizontal.")
 		parser.add_argument('-t', '--type', dest='type', required=False, help="For JPEG output use -type jpg|JPG|jpeg|JPEG. Default output is PNG.")
-		parser.add_argument('-e', '--encoder', dest='encoder', required=False, help="The specific lib to use to encode the output. Default encoder is Pillow. Use -e imagemagic|magic to use the size constraint feature which looks something like: " + _text_colors.WHITE + "python make_sprites_from_frames.py -t jpg -e magic -x 700" + _text_colors.ENDC)
+		parser.add_argument('-e', '--encoder', dest='encoder', required=False, help="The specific lib to use to encode the output. Default encoder is Pillow. Use -e imagemagic|magic to use the size constraint feature which looks something like: " + _text_colors.WHITE + "python3 MakeSpritesFromFrames.py -t jpg -e magic -x 700" + _text_colors.ENDC)
 		parser.add_argument('-x', '--extent', dest='extent', required=False, help="Sets the extent flag in the ImageMagick conversion.")
 		parser.add_argument('-q', '--quality', dest='quality', required=False, help="e.g. For JPEG with quality 80 use -q 80. Default quality is 70.")
 		parser.add_argument('-qset', dest='qset', action='store_true', help="e.g. To export a range of quality settings 50 through 100. Default quality is 70.")
@@ -95,7 +119,7 @@ class make_sprites_from_frames():
 			self.extent = args.extent.lower()
 			print("extent: " + args.extent)
 		else:
-			print("Will save at 600KB if magic was called. Use -x flag and pass in a number for KB.")
+			print("Will save at 600KB if magic was called. Use -x flag and pass in a number for kB.")
 
 		if args.verbose:
 			self.verbose = args.verbose
@@ -163,65 +187,65 @@ class make_sprites_from_frames():
 				self.local_print(_text_colors.WHITE + "Using JPG quality of "  + _text_colors.ENDC + _text_colors.CYAN + str( self.quality ) + _text_colors.ENDC)
 			for q in qset:
 				# if there is an alpha channel this will remove it
-				dealphaImage = processed_sprite.convert("RGB")
+				dealpha_image = processed_sprite.convert("RGB")
 
 				if self.encoder == "pillow":
 					file_name = self.sprite_prefix + self.working_dir_short_name + "-q" + str(q) + ".jpg"
-					fullFilePath = file_name
+					full_file_path = file_name
 					self.local_print(_text_colors.WHITE + "Quality set to " + str(q) + _text_colors.ENDC)
-					dealphaImage.save(fullFilePath, "JPEG", quality=int(q), optimize=True, progressive=True)	
-					self.print_sprite_complete(fullFilePath)					
+					dealpha_image.save(full_file_path, "JPEG", quality=int(q), optimize=True, progressive=True)	
+					self.print_sprite_complete(full_file_path)					
 				elif self.encoder == "magic" or self.encoder == "imagemagic":
 					try:
 						file_name = self.sprite_prefix + self.working_dir_short_name + ".jpg"
-						fullFilePath = file_name
+						full_file_path = file_name
 
-						processed_sprite.save(fullFilePath + ".png") # this is really a temp file
-						self.local_print(_text_colors.WHITE + "Converting with " + _text_colors.ENDC + _text_colors.CYAN + str( self.extent ) + _text_colors.ENDC + _text_colors.WHITE + " KB extent" + _text_colors.ENDC)
-						arg = "convert " + fullFilePath + ".png -define jpeg:extent=" + str(self.extent) + "kb " + fullFilePath
+						processed_sprite.save(full_file_path + ".png") # this is really a temp file
+						self.local_print(_text_colors.WHITE + "Converting with " + _text_colors.ENDC + _text_colors.CYAN + str( self.extent ) + _text_colors.ENDC + _text_colors.WHITE + " kB extent" + _text_colors.ENDC)
+						arg = "convert " + full_file_path + ".png -define jpeg:extent=" + str(self.extent) + "kB " + full_file_path
 						self.local_print(_text_colors.DARKGREEN + arg + _text_colors.ENDC)
 						os.system( arg )
-						os.system( "rm " + fullFilePath + ".png" ) # remove the temp file
+						os.system( "rm " + full_file_path + ".png" ) # remove the temp file
 						self.local_print(_text_colors.WHITE + "Removed a temp PNG file." + _text_colors.ENDC)
-						self.print_sprite_complete(fullFilePath)
+						self.print_sprite_complete(full_file_path)
 						pass
 					except Exception as e:
 						print("If you're seeing this error, make sure you are passing in -e magic on the command line. Does not work from within SUBLIME.")
 						raise e
 
-	def print_sprite_complete(self, pName):
-		print("\nThe sprite " + _text_colors.KNOCKOUT + pName + _text_colors.ENDC + " has been created.")	
+	def print_sprite_complete(self, sprite_name):
+		'''Message the user with process is complete.'''
+		print("\nThe sprite " + _text_colors.KNOCKOUT + sprite_name + _text_colors.ENDC + " has been created.")	
 
-	def local_print(self, pMessage):
+	def local_print(self, message):
+		'''Verbose printing.'''
 		if self.verbose == True:
-			print(pMessage)
+			print(message)
 
-# instantiate the sprite making class
-f = make_sprites_from_frames()
+# Instantiate the sprite making class,
+WORKER = MakeSpritesFromFrames()
 
-# first thing we do is sort the PNGs into folders
-bssa = BuildSpriteStagingDirs()
-bssa.sort_images("png")
+# First thing we do is sort the PNGs into folders.
+BuildSpriteStagingDirs().sort_images("png")
 
-# get our directories
-# assumes this script is running at sibling level to these folders
+# Get our directories, assumes this script is running at sibling level to these folders.
 try:
-	dirs = next( os.walk('./' + f.sprite_staging_area) )[1]
+	dirs = next( os.walk('./' + WORKER.sprite_staging_area) )[1]
 except Exception as e:
 	print(_text_colors.ERROR_EMOJI)
-	print( _text_colors.WARNING + "I couldn't find a __sprite_staging_area directory, so I failed here. " + _text_colors.ENDC + _text_colors.CYAN + "Things to try: Re-render your sprites using  __render_frames_from_selected_comps or  __render_tagged_layers_from_selected_comps WITHOUT folders." + _text_colors.ENDC )
+	print(_text_colors.WARNING + "I couldn't find a __sprite_staging_area directory, so I failed here. " + _text_colors.ENDC + _text_colors.CYAN + "Things to try: Re-render your sprites using '__generate_sequences_from_frames.jsx' WITHOUT folders." + _text_colors.ENDC )
 	raise e
 
 # loop our dirs and make sprites
 for dir in dirs:
-	f.working_dir_short_name = dir
-	f.working_dir = f.sprite_staging_area + "/" + dir + "/" 
+	WORKER.working_dir_short_name = dir
+	WORKER.working_dir = WORKER.sprite_staging_area + "/" + dir + "/" 
 	try:
-		f.main()
+		WORKER.main()
 	except Exception as e:
 		print(_text_colors.ERROR_EMOJI)
 		raise e
 
-# delete the __sprite_staging_area directory
+# Delete the __sprite_staging_area directory.
 # print("Deleting the temp director " + _text_colors.CYAN + f.sprite_staging_area + _text_colors.ENDC)
 # shutil.rmtree("__sprite_staging_area")
