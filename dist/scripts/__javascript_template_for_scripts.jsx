@@ -32,7 +32,9 @@ var nameOfFunction = function() {
     return {
 
         arrSelectedComps: getSelectedComps(),
-        main: function(argument) {
+        main: function() {
+            alert(arguments);
+            return;
             var selectedComp;
             var taskCount = 0;
 

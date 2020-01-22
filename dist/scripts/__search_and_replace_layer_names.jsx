@@ -69,7 +69,7 @@ var searchAndReplaceLayerNames = function() {
 };
 
 /**
- * functionObject is a function containing the layer object.
+ * Param functionObject is a function containing the layer object.
  * Stores the state of the layer's lock state.
  */
 function runCheckLock(functionObject) {
@@ -97,7 +97,16 @@ function runCheckLock(functionObject) {
  */
 var checkLock = runCheckLock(function(layer) {});
 
-    
+/**
+ * Anything to be passed to the script's main method is set here.
+ */
+var vars = {
+    searchAndReplaceBundle: [ // each nested pair = [searchString, replaceString]
+        ['1', '_intro'],
+        ['2', '_outro'],
+        ['', ''] // etc
+    ]
+};
 
 /**
  * Runs the script.

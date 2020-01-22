@@ -23,7 +23,7 @@
 
 #include './__common.jsx'; // includes polyfills and common functions
 
-app.beginUndoGroup('wori_undo');
+app.beginUndoGroup('work_undo');
 
 /**
  * Function with inner main function. Invoied at bottom of this file.
