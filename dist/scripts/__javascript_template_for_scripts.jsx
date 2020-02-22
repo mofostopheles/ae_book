@@ -32,14 +32,12 @@ var nameOfFunction = function() {
     return {
 
         arrSelectedComps: getSelectedComps(),
-        main: function() {
-            alert(arguments);
-            return;
+        main: function(argument) {
             var selectedComp;
             var taskCount = 0;
 
-            for (var k = this.arrSelectedComps.length - 1; k >= 0; k--) {
-                selectedComp = this.arrSelectedComps[k];
+            for (var i = this.arrSelectedComps.length - 1; i >= 0; i--) {
+                selectedComp = this.arrSelectedComps[i];
                 var layer;
                 // loop layers, find the target layer
                 for (var j = 1; j <= selectedComp.layers.length; j++) {
